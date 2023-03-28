@@ -12,7 +12,7 @@ import lombok.*;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 
-public class Grades {
+public class Grade {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -23,5 +23,10 @@ public class Grades {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

@@ -17,34 +17,35 @@ public class EffectiveMobileTestTaskApplication {
         this.purchaseHistoryRepository = purchaseHistoryRepository;
     }
 
-    @Bean
-    CommandLineRunner initUsers(UserRepository userRepository
-    ) {
-        return (evt) -> Arrays.asList(
-                        "a,dsyer,pwebb,ogierke,rwinch,mfisher,mpollack,jlong".split(","))
-                .forEach(
-                        a -> {
-                            User user = new User();
-                            System.out.println(a);
 
-                            if (a.toString().equals("a")) {
-                                user.setUsername(a);
-                                user.setPassword("1");
-                                user.setEmail("dsfasd");
-                                user.setBalance(0.0);
-                                user.setRoles(Set.of(Role.ADMIN));
-                                userRepository.save(user);
-                            } else {
-
-                                user.setUsername(a);
-                                user.setPassword("1");
-                                user.setEmail("dsfasd");
-                                user.setBalance(0.0);
-                                user.setRoles(Collections.singleton(Role.USER));
-                                userRepository.save(user);
-                            }
-                        });
-    }
+//    @Bean
+//    CommandLineRunner initUsers(UserRepository userRepository
+//    ) {
+//        return (evt) -> Arrays.asList(
+//                        "a,dsyer,pwebb,ogierke,rwinch,mfisher,mpollack,jlong".split(","))
+//                .forEach(
+//                        a -> {
+//                            User user = new User();
+//                            System.out.println(a);
+//
+//                            if (a.toString().equals("a")) {
+//                                user.setUsername(a);
+//                                user.setPassword("1");
+//                                user.setEmail("dsfasd");
+//                                user.setBalance(0.0);
+//                                user.setRoles(Set.of(Role.ADMIN));
+//                                userRepository.save(user);
+//                            } else {
+//
+//                                user.setUsername(a);
+//                                user.setPassword("1");
+//                                user.setEmail("dsfasd");
+//                                user.setBalance(0.0);
+//                                user.setRoles(Collections.singleton(Role.USER));
+//                                userRepository.save(user);
+//                            }
+//                        });
+//    }
 //
 //    @Bean
 //    CommandLineRunner initDiscounts(DiscountRepository discountRepository) {

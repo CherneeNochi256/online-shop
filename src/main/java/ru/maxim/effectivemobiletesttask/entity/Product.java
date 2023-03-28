@@ -1,6 +1,5 @@
 package ru.maxim.effectivemobiletesttask.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,7 +39,7 @@ public class Product implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "product")
     private Set<Table> tables;
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Grades> grades;
+    private List<Grade> grades;
 
 
     @OneToOne(optional = false, mappedBy="product")

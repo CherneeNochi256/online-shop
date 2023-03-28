@@ -2,12 +2,8 @@ package ru.maxim.effectivemobiletesttask.rest;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import ru.maxim.effectivemobiletesttask.entity.Comment;
-import ru.maxim.effectivemobiletesttask.entity.Product;
-import ru.maxim.effectivemobiletesttask.entity.PurchaseHistory;
-import ru.maxim.effectivemobiletesttask.entity.User;
-import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
-import ru.maxim.effectivemobiletesttask.repository.PurchaseHistoryRepository;
+import ru.maxim.effectivemobiletesttask.entity.*;
+import ru.maxim.effectivemobiletesttask.repository.*;
 
 import java.util.Optional;
 
@@ -17,10 +13,19 @@ public class UserController {
 
     private final PurchaseHistoryRepository purchaseHistoryRepository;
     private final ProductRepository productRepository;
+    private final CommentRepository commentRepository;
+    private final GradeRepository gradeRepository;
+    private final UserRepository userRepository;
 
-    public UserController(PurchaseHistoryRepository purchaseHistoryRepository, ProductRepository productRepository) {
+    public UserController(PurchaseHistoryRepository purchaseHistoryRepository, ProductRepository productRepository,
+                          CommentRepository commentRepository,
+                          GradeRepository gradeRepository,
+                          UserRepository userRepository) {
         this.purchaseHistoryRepository = purchaseHistoryRepository;
         this.productRepository = productRepository;
+        this.commentRepository = commentRepository;
+        this.gradeRepository = gradeRepository;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("buy/{id}")
@@ -42,6 +47,29 @@ public class UserController {
                         @AuthenticationPrincipal User user,
                         @RequestBody Comment comment
                         ){
+            Comment resultComment = new Comment();
+
+            resultComment.setUser(user);
+            resultComment.setMessage(comment.getMessage());
+            resultComment.setProduct(product);
+
+            commentRepository.save(resultComment);
+    }
+
+    @PostMapping("grade/{id}")
+    public void estimate(@PathVariable("id") Product product,
+                         @AuthenticationPrincipal User user,
+                         @RequestBody Grade grade
+                         ){
+        Grade resultGrade = new Grade();
+
+        resultGrade.setUser(user);
+        resultGrade.setValue(grade.getValue());
+        resultGrade.setProduct(product);
+
+        gradeRepository.save(resultGrade);
 
     }
+
+
 }
