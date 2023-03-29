@@ -56,7 +56,7 @@ public class UserController {
         if (productFromDb.isPresent()) {
 
             for (PurchaseHistory purchase : purchaseHistory) {
-                if (purchase.getProduct().equals(productFromDb.get()) && TimeUnit.MILLISECONDS.toHours(new Date().getTime() - purchase.getDate().getTime()) <= 24L ){
+                if (purchase.getProduct().equals(productFromDb.get()) && TimeUnit.MILLISECONDS.toHours(new Date().getTime() - purchase.getDate().getTime()) <= 24L) {
                     user.setBalance(user.getBalance() + productFromDb.get().getPrice());
                     productFromDb.get().setQuantity(productFromDb.get().getQuantity() + 1);
                     purchaseHistoryRepository.removeById(purchase.getId());
@@ -71,13 +71,22 @@ public class UserController {
                         @AuthenticationPrincipal User user,
                         @RequestBody Comment comment
     ) {
-        Comment resultComment = new Comment();
+        Set<PurchaseHistory> purchases = purchaseHistoryRepository.findByUser(user);
 
-        resultComment.setUser(user);
-        resultComment.setMessage(comment.getMessage());
-        resultComment.setProduct(product);
+        for (PurchaseHistory purchase : purchases
+        ) {
+            if (purchase.getProduct().equals(product)) {
 
-        commentRepository.save(resultComment);
+                Comment resultComment = new Comment();
+
+                resultComment.setUser(user);
+                resultComment.setMessage(comment.getMessage());
+                resultComment.setProduct(product);
+
+                commentRepository.save(resultComment);
+            }
+        }
+
     }
 
     @PostMapping("grade/{id}")
@@ -85,14 +94,21 @@ public class UserController {
                          @AuthenticationPrincipal User user,
                          @RequestBody Grade grade
     ) {
-        Grade resultGrade = new Grade();
+        Set<PurchaseHistory> purchases = purchaseHistoryRepository.findByUser(user);
 
-        resultGrade.setUser(user);
-        resultGrade.setValue(grade.getValue());
-        resultGrade.setProduct(product);
+        for (PurchaseHistory purchase : purchases
+        ) {
+            if (purchase.getProduct().equals(product)) {
 
-        gradeRepository.save(resultGrade);
+                Grade resultGrade = new Grade();
 
+                resultGrade.setUser(user);
+                resultGrade.setValue(grade.getValue());
+                resultGrade.setProduct(product);
+
+                gradeRepository.save(resultGrade);
+            }
+        }
     }
 
 
