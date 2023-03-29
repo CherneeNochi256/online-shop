@@ -1,11 +1,13 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.maxim.effectivemobiletesttask.entity.*;
 import ru.maxim.effectivemobiletesttask.repository.*;
 
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/main/user")
@@ -69,6 +71,18 @@ public class UserController {
 
         gradeRepository.save(resultGrade);
 
+    }
+
+
+    @GetMapping("history")
+    public Set<PurchaseHistory> history(@AuthenticationPrincipal User user){
+        return  purchaseHistoryRepository.findByUser(user);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("history/{id}")
+    public Set<PurchaseHistory> specificUserHistory(@PathVariable("id") User user){
+        return  purchaseHistoryRepository.findByUser(user);
     }
 
 
