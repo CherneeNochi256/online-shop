@@ -123,5 +123,14 @@ public class UserController {
         return purchaseHistoryRepository.findByUser(user);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("topUp/{id}/{moneyAmount}")
+    public void topUp(@PathVariable("id") User user,
+                      @PathVariable Double moneyAmount) {
+        Optional<User> userFromDb = userRepository.findById(user.getId());
+
+        userFromDb.ifPresent(u -> u.setBalance(u.getBalance() + moneyAmount));
+    }
+
 
 }
