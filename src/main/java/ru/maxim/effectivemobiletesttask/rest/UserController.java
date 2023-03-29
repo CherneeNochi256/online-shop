@@ -133,4 +133,38 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("{id}")
+    public User getUser(@PathVariable("id") User user){
+        return userRepository.findById(user.getId()).get();
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("{id}")
+    public void deleteUser(@PathVariable("id") User user){
+        Optional<User> userFromDb = userRepository.findById(user.getId());
+
+        userFromDb.ifPresent(userRepository::delete);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("freeze/{id}")
+    public void freezeUser(@PathVariable("id") String id){
+        Optional<User> userFromDb = userRepository.findById(Long.parseLong(id));
+
+
+       if (userFromDb.isPresent()){
+           userFromDb.get().getRoles().remove(Role.USER);
+           userFromDb.get().getRoles().add(Role.FROZEN);
+           userRepository.save(userFromDb.get());
+       }
+    }
+
+//    @PreAuthorize("hasAuthority('ADMIN')")
+//    @GetMapping("freeze/{id}")
+//    public User f(@PathVariable("id") String id){
+//        Optional<User> userFromDb = userRepository.findById(Long.parseLong(id));
+//
+//        return userFromDb.get();
+//    }
 }
