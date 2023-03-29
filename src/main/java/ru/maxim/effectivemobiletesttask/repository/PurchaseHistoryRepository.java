@@ -11,4 +11,6 @@ import java.util.Set;
 public interface PurchaseHistoryRepository extends JpaRepository<PurchaseHistory, Long> {
 
     Set<PurchaseHistory> findByUser(User user);
+
+    void removeById(Long id);
 }
