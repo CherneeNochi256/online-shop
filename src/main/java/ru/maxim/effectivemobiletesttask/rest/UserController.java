@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,16 +21,19 @@ public class UserController {
     private final CommentRepository commentRepository;
     private final GradeRepository gradeRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     public UserController(PurchaseHistoryRepository purchaseHistoryRepository, ProductRepository productRepository,
                           CommentRepository commentRepository,
                           GradeRepository gradeRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          NotificationRepository notificationRepository) {
         this.purchaseHistoryRepository = purchaseHistoryRepository;
         this.productRepository = productRepository;
         this.commentRepository = commentRepository;
         this.gradeRepository = gradeRepository;
         this.userRepository = userRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     @PostMapping("buy/{id}")
@@ -135,13 +139,13 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("{id}")
-    public User getUser(@PathVariable("id") User user){
+    public User getUser(@PathVariable("id") User user) {
         return userRepository.findById(user.getId()).get();
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("{id}")
-    public void deleteUser(@PathVariable("id") User user){
+    public void deleteUser(@PathVariable("id") User user) {
         Optional<User> userFromDb = userRepository.findById(user.getId());
 
         userFromDb.ifPresent(userRepository::delete);
@@ -149,22 +153,37 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("freeze/{id}")
-    public void freezeUser(@PathVariable("id") String id){
+    public void freezeUser(@PathVariable("id") String id) {
         Optional<User> userFromDb = userRepository.findById(Long.parseLong(id));
 
 
-       if (userFromDb.isPresent()){
-           userFromDb.get().getRoles().remove(Role.USER);
-           userFromDb.get().getRoles().add(Role.FROZEN);
-           userRepository.save(userFromDb.get());
-       }
+        if (userFromDb.isPresent()) {
+            userFromDb.get().getRoles().remove(Role.USER);
+            userFromDb.get().getRoles().add(Role.FROZEN);
+            userRepository.save(userFromDb.get());
+        }
     }
 
-//    @PreAuthorize("hasAuthority('ADMIN')")
-//    @GetMapping("freeze/{id}")
-//    public User f(@PathVariable("id") String id){
-//        Optional<User> userFromDb = userRepository.findById(Long.parseLong(id));
-//
-//        return userFromDb.get();
-//    }
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("notify/{id}")
+    public void notifyUser(@PathVariable("id") String id,
+                           @RequestBody Notification notification) {
+        Optional<User> userFromDb = userRepository.findById(Long.parseLong(id));
+
+
+        if (userFromDb.isPresent()) {
+            Notification resultNotification = new Notification();
+
+            BeanUtils.copyProperties(notification, resultNotification, "id","user");
+
+            resultNotification.setDateOfCreation(new Date());
+
+            resultNotification.setUser(userFromDb.get());
+
+            userFromDb.get().getNotifications().add(resultNotification);
+
+            notificationRepository.save(resultNotification);
+        }
+
+    }
 }
