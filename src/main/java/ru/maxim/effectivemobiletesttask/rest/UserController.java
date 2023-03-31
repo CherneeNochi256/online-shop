@@ -22,18 +22,21 @@ public class UserController {
     private final GradeRepository gradeRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
+    private final OrganizationsRepository organizationsRepository;
 
     public UserController(PurchaseHistoryRepository purchaseHistoryRepository, ProductRepository productRepository,
                           CommentRepository commentRepository,
                           GradeRepository gradeRepository,
                           UserRepository userRepository,
-                          NotificationRepository notificationRepository) {
+                          NotificationRepository notificationRepository,
+                          OrganizationsRepository organizationsRepository) {
         this.purchaseHistoryRepository = purchaseHistoryRepository;
         this.productRepository = productRepository;
         this.commentRepository = commentRepository;
         this.gradeRepository = gradeRepository;
         this.userRepository = userRepository;
         this.notificationRepository = notificationRepository;
+        this.organizationsRepository = organizationsRepository;
     }
 
     @PostMapping("buy/{id}")
@@ -121,69 +124,25 @@ public class UserController {
         return purchaseHistoryRepository.findByUser(user);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("history/{id}")
-    public Set<PurchaseHistory> specificUserHistory(@PathVariable("id") User user) {
-        return purchaseHistoryRepository.findByUser(user);
+    @GetMapping("notification")
+    public Set<Notification> getNotifications(@AuthenticationPrincipal User user){
+        return notificationRepository.findByUser(user);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("topUp/{id}/{moneyAmount}")
-    public void topUp(@PathVariable("id") User user,
-                      @PathVariable Double moneyAmount) {
+    @PostMapping("organization")
+    public void createOrganization(@AuthenticationPrincipal User user,
+                                   @RequestBody Organization organization){
+
         Optional<User> userFromDb = userRepository.findById(user.getId());
 
-        userFromDb.ifPresent(u -> u.setBalance(u.getBalance() + moneyAmount));
-    }
+        Organization resultOrganization = new Organization();
 
+        BeanUtils.copyProperties(organization,resultOrganization,"id");
+        userFromDb.get().getRoles().add(Role.ORG_OWNER);
+        resultOrganization.setUser(userFromDb.get());
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("{id}")
-    public User getUser(@PathVariable("id") User user) {
-        return userRepository.findById(user.getId()).get();
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping("{id}")
-    public void deleteUser(@PathVariable("id") User user) {
-        Optional<User> userFromDb = userRepository.findById(user.getId());
-
-        userFromDb.ifPresent(userRepository::delete);
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("freeze/{id}")
-    public void freezeUser(@PathVariable("id") String id) {
-        Optional<User> userFromDb = userRepository.findById(Long.parseLong(id));
-
-
-        if (userFromDb.isPresent()) {
-            userFromDb.get().getRoles().remove(Role.USER);
-            userFromDb.get().getRoles().add(Role.FROZEN);
-            userRepository.save(userFromDb.get());
-        }
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("notify/{id}")
-    public void notifyUser(@PathVariable("id") String id,
-                           @RequestBody Notification notification) {
-        Optional<User> userFromDb = userRepository.findById(Long.parseLong(id));
-
-
-        if (userFromDb.isPresent()) {
-            Notification resultNotification = new Notification();
-
-            BeanUtils.copyProperties(notification, resultNotification, "id","user");
-
-            resultNotification.setDateOfCreation(new Date());
-
-            resultNotification.setUser(userFromDb.get());
-
-            userFromDb.get().getNotifications().add(resultNotification);
-
-            notificationRepository.save(resultNotification);
-        }
+        userRepository.save(userFromDb.get());
+        organizationsRepository.save(resultOrganization);
 
     }
 }
