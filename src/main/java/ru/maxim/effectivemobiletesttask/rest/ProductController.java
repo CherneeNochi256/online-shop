@@ -37,7 +37,7 @@ public class ProductController {
         Optional<Organization> organizationFromDb = organizationsRepository.findByName(orgName);
 
         if (organizationFromDb.isPresent() && organizationFromDb.get().getUser().equals(user)) {
-            product.setOrganizations(organizationFromDb.get());
+            product.setOrganization(organizationFromDb.get());
             productRepository.save(product);
         }
     }

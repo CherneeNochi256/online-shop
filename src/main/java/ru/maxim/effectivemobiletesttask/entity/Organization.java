@@ -25,7 +25,7 @@ public class Organization {
     private String name;
     private String description;
     private String logoPath;
-    @OneToMany(mappedBy = "organizations", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "organization", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private Set<Product> products;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

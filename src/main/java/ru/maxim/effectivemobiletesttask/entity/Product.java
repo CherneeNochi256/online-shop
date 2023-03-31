@@ -24,7 +24,7 @@ public class Product implements Serializable {
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
-    private Organization organizations;
+    private Organization organization;
     private Double price;
     private Long quantity;
 

@@ -46,6 +46,7 @@ public class UserController {
 
         if (productFromDb.isPresent() && productFromDb.get().getPrice() < user.getBalance()) {
             user.setBalance(user.getBalance() - productFromDb.get().getPrice());
+            productFromDb.get().getOrganization().getUser().setBalance(productFromDb.get().getOrganization().getUser().getBalance() + productFromDb.get().getPrice());
             productFromDb.get().setQuantity(productFromDb.get().getQuantity() - 1);
             PurchaseHistory purchaseHistory = new PurchaseHistory();
             purchaseHistory.setUser(user);
