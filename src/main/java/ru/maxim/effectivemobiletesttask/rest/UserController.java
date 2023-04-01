@@ -46,7 +46,7 @@ public class UserController {
 
         if (productFromDb.isPresent() && productFromDb.get().getPrice() < user.getBalance()) {
             user.setBalance(user.getBalance() - productFromDb.get().getPrice());
-            productFromDb.get().getOrganization().getUser().setBalance(productFromDb.get().getOrganization().getUser().getBalance() + productFromDb.get().getPrice());
+            productFromDb.get().getOrganization().getUser().setBalance(productFromDb.get().getOrganization().getUser().getBalance() + productFromDb.get().getPrice() - (productFromDb.get().getPrice() * 0.05));
             productFromDb.get().setQuantity(productFromDb.get().getQuantity() - 1);
             PurchaseHistory purchaseHistory = new PurchaseHistory();
             purchaseHistory.setUser(user);
@@ -66,6 +66,7 @@ public class UserController {
             for (PurchaseHistory purchase : purchaseHistory) {
                 if (purchase.getProduct().equals(productFromDb.get()) && TimeUnit.MILLISECONDS.toHours(new Date().getTime() - purchase.getDate().getTime()) <= 24L) {
                     user.setBalance(user.getBalance() + productFromDb.get().getPrice());
+                    productFromDb.get().getOrganization().getUser().setBalance(productFromDb.get().getOrganization().getUser().getBalance() - productFromDb.get().getPrice() );
                     productFromDb.get().setQuantity(productFromDb.get().getQuantity() + 1);
                     purchaseHistoryRepository.removeById(purchase.getId());
                 }
@@ -138,9 +139,10 @@ public class UserController {
 
         Organization resultOrganization = new Organization();
 
-        BeanUtils.copyProperties(organization,resultOrganization,"id");
+        BeanUtils.copyProperties(organization,resultOrganization,"id","status");
         userFromDb.get().getRoles().add(Role.ORG_OWNER);
         resultOrganization.setUser(userFromDb.get());
+        resultOrganization.setStatus("ACTIVE");
 
         userRepository.save(userFromDb.get());
         organizationsRepository.save(resultOrganization);

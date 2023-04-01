@@ -31,4 +31,6 @@ public class Organization {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String status;
+
 }

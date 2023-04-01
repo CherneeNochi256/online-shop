@@ -11,9 +11,7 @@ import ru.maxim.effectivemobiletesttask.entity.User;
 import ru.maxim.effectivemobiletesttask.repository.OrganizationsRepository;
 import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
 
-import java.util.Collections;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 
 @RestController
@@ -31,24 +29,33 @@ public class ProductController {
 
     @PreAuthorize("hasAuthority('ORG_OWNER')")
     @PostMapping("{orgName}")
-    public void create(@RequestBody Product product,
+    public void createProduct(@RequestBody Product product,
                        @PathVariable String orgName,
                        @AuthenticationPrincipal User user) {
         Optional<Organization> organizationFromDb = organizationsRepository.findByName(orgName);
 
-        if (organizationFromDb.isPresent() && organizationFromDb.get().getUser().equals(user)) {
+        if (organizationFromDb.isPresent() && organizationFromDb.get().getUser().equals(user) && organizationFromDb.get().getStatus().equals("ACTIVE")) {
             product.setOrganization(organizationFromDb.get());
             productRepository.save(product);
         }
     }
 
+    @PreAuthorize("hasAuthority('ORG_OWNER')")
     @PutMapping("{id}")
     public void update(@RequestBody Product product,
-                       @PathVariable String id) {
+                       @PathVariable String id,
+                       @AuthenticationPrincipal User user) {
         Optional<Product> productFromDb = productRepository.findById(Long.parseLong(id));
+        Optional<Organization> organizationFromDb = organizationsRepository.findByName(product.getOrganization().getName());
 
-        if (productFromDb.isPresent()) {
-            BeanUtils.copyProperties(product, productFromDb.get(), "id");
+
+
+        if (productFromDb.isPresent() && productFromDb.get().getOrganization().getUser().equals(user)) {
+            BeanUtils.copyProperties(product, productFromDb.get(), "id","organization");
+
+            if (organizationFromDb.isPresent() && !organizationFromDb.get().equals(product.getOrganization()) && organizationFromDb.get().getUser().equals(user)) {
+               productFromDb.get().setOrganization(organizationFromDb.get());
+            }
 
             productRepository.save(productFromDb.get());
         }
@@ -57,8 +64,13 @@ public class ProductController {
     @GetMapping("{id}")
     public Product get(@PathVariable String id) {
         Optional<Product> product = productRepository.findById(Long.parseLong(id));
-        if (product.isPresent()) {
+        if (product.isPresent() && product.get().getOrganization().getStatus().equals("ACTIVE")) {
             return product.get();
         } else throw new NoSuchElementException();
+    }
+
+    @GetMapping()
+    public List<Product> getAll(){
+        return productRepository.findAll();
     }
 }
