@@ -21,7 +21,7 @@ public class ProductAdminController {
     @PostMapping
     public void create(@RequestBody Product product) {
         RestPreconditions.checkNotNull(product);
-        productService.createProduct(product);
+        productService.createProductByAdmin(product);
     }
 
     @PutMapping("{id}")
@@ -29,7 +29,7 @@ public class ProductAdminController {
                        @PathVariable("id") Long productId) {
         RestPreconditions.checkNotNull(product);
 
-      productService.updateProduct(product,productId);
+      productService.updateProductByAdmin(product,productId);
     }
 
     @GetMapping("{id}")
