@@ -1,15 +1,16 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.maxim.effectivemobiletesttask.entity.Discount;
 import ru.maxim.effectivemobiletesttask.entity.Product;
-import ru.maxim.effectivemobiletesttask.entity.Tag;
 import ru.maxim.effectivemobiletesttask.repository.DiscountRepository;
 import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
+import ru.maxim.effectivemobiletesttask.service.DiscountService;
+import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,53 +18,50 @@ import java.util.Set;
 @RequestMapping("api/main/discount")
 public class DiscountController {
 
-    private final DiscountRepository discountRepository;
-    private final ProductRepository productRepository;
+    private final DiscountService discountService;
 
 
-    public DiscountController(DiscountRepository discountRepository, ProductRepository productRepository) {
-        this.discountRepository = discountRepository;
-        this.productRepository = productRepository;
+    public DiscountController(DiscountService discountService) {
+
+        this.discountService = discountService;
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("{id}")
-    public Discount get(@PathVariable String id) {
-        Optional<Discount> discount = discountRepository.findById(Long.parseLong(id));
-        if (discount.isPresent()) {
-            return discount.get();
-        } else throw new NoSuchElementException();
+    public Discount get(@PathVariable("id") Discount discount) {
+        return RestPreconditions.checkDiscount(discount);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("{product}")
     public void createForOne(@RequestBody Discount discount,
                              @PathVariable Product product) {
-        Optional<Product> productFromDb = productRepository.findById(product.getId());
+        RestPreconditions.checkNotNull(discount);
+        RestPreconditions.checkProduct(product);
 
-        productFromDb.ifPresent(value -> value.setDiscount(discount));
-        discountRepository.save(discount);
+        discountService.createDiscountForProduct(product,discount);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("tags/{tag}")
     public void createForGroup(@RequestBody Discount discount,
                                @PathVariable String tag) {
-        Set<Product> productsFromDb = productRepository.findProductsByTag(tag);
+        RestPreconditions.checkNotNull(discount);
 
-        for (Product product : productsFromDb) {
-            product.setDiscount(discount);
-        }
-        discountRepository.save(discount);
+        discountService.createDiscountForGroup(discount,tag);
+
     }
+
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("{id}")
     public void update(@RequestBody Discount discount,
-                       @PathVariable String id) {
-        Optional<Discount> discountFromDb = discountRepository.findById(Long.parseLong(id));
+                       @PathVariable("id") Long discountId) {
+        RestPreconditions.checkNotNull(discount);
 
-        copyProperties(discount, discountFromDb);
+        discountService.updateDiscount(discount,discountId);
 
     }
 
@@ -71,22 +69,11 @@ public class DiscountController {
     @PutMapping("tags/{tag}")
     public void updateForGroup(@RequestBody Discount discount,
                                @PathVariable String tag) {
-        Product productFromDb = productRepository.findProductByTag(tag);
+       RestPreconditions.checkNotNull(discount);
 
-        Optional<Discount> discountFromDb = discountRepository.findById(productFromDb.getDiscount().getId());
-
-        copyProperties(discount, discountFromDb);
+       discountService.updateDiscountForGroup(discount,tag);
 
 
-    }
-
-
-    private void copyProperties(Discount discount, Optional<Discount> discountFromDb) {
-        if (discountFromDb.isPresent()) {
-            BeanUtils.copyProperties(discount, discountFromDb.get(), "id");
-
-            discountRepository.save(discountFromDb.get());
-        }
     }
 
 }

@@ -59,7 +59,7 @@ public class UserController {
     public void refund(@PathVariable("id") String id,
                        @AuthenticationPrincipal User user) {
         Optional<Product> productFromDb = productRepository.findById(Long.parseLong(id));
-        Set<PurchaseHistory> purchaseHistory = purchaseHistoryRepository.findByUser(user);
+       Set<PurchaseHistory> purchaseHistory = purchaseHistoryRepository.findByUser(user);
 
         if (productFromDb.isPresent()) {
 
@@ -82,8 +82,7 @@ public class UserController {
     ) {
         Set<PurchaseHistory> purchases = purchaseHistoryRepository.findByUser(user);
 
-        for (PurchaseHistory purchase : purchases
-        ) {
+        for (PurchaseHistory purchase : purchases) {
             if (purchase.getProduct().equals(product)) {
 
                 Comment resultComment = new Comment();
@@ -145,6 +144,7 @@ public class UserController {
         resultOrganization.setStatus("ACTIVE");
 
         userRepository.save(userFromDb.get());
+
         organizationsRepository.save(resultOrganization);
 
     }
