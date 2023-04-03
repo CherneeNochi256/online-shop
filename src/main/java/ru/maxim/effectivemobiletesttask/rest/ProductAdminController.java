@@ -1,49 +1,39 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.maxim.effectivemobiletesttask.entity.Product;
-import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
-
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import ru.maxim.effectivemobiletesttask.service.ProductService;
+import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 @PreAuthorize("hasAuthority('ADMIN')")
 @RestController
 @RequestMapping("api/main/admin/product")
 public class ProductAdminController {
 
-    private final ProductRepository repository;
+    private final ProductService productService;
 
-    public ProductAdminController(ProductRepository repository) {
-        this.repository = repository;
+    public ProductAdminController(ProductService productService) {
+        this.productService = productService;
     }
 
 
     @PostMapping
     public void create(@RequestBody Product product) {
-      repository.save(product);
+        RestPreconditions.checkNotNull(product);
+        productService.createProduct(product);
     }
 
     @PutMapping("{id}")
     public void update(@RequestBody Product product,
-                       @PathVariable String id) {
-        Optional<Product> productFromDb= repository.findById(Long.parseLong(id));
+                       @PathVariable("id") Long productId) {
+        RestPreconditions.checkNotNull(product);
 
-        if (productFromDb.isPresent()){
-            BeanUtils.copyProperties(product, productFromDb.get(), "id");
-
-            repository.save(productFromDb.get());
-        }
+      productService.updateProduct(product,productId);
     }
 
     @GetMapping("{id}")
-    public Product get(@PathVariable String id) {
-        Optional<Product> product = repository.findById(Long.parseLong(id));
-        if (product.isPresent()){
-            return product.get();
-        }
-        else throw new NoSuchElementException();
+    public Product get(@PathVariable("id") Product product) {
+       return RestPreconditions.checkProduct(product);
     }
 }

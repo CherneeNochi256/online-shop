@@ -1,18 +1,12 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.maxim.effectivemobiletesttask.entity.Discount;
 import ru.maxim.effectivemobiletesttask.entity.Product;
-import ru.maxim.effectivemobiletesttask.repository.DiscountRepository;
-import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
 import ru.maxim.effectivemobiletesttask.service.DiscountService;
 import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
-
-import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("api/main/discount")
