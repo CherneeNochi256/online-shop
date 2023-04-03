@@ -1,12 +1,11 @@
 package ru.maxim.effectivemobiletesttask.utils;
 
 import org.springframework.stereotype.Component;
-import ru.maxim.effectivemobiletesttask.entity.Discount;
-import ru.maxim.effectivemobiletesttask.entity.Organization;
-import ru.maxim.effectivemobiletesttask.entity.Product;
-import ru.maxim.effectivemobiletesttask.entity.User;
+import ru.maxim.effectivemobiletesttask.entity.*;
 import ru.maxim.effectivemobiletesttask.exception.ResourceIsNullException;
 import ru.maxim.effectivemobiletesttask.exception.ResourceNotFoundException;
+
+import java.util.Set;
 
 
 @Component
@@ -44,6 +43,19 @@ public class RestPreconditions {
             throw new ResourceNotFoundException("Product not found");
         }
         return product;
+    }
+
+    public static Set<PurchaseHistory> checkPurchaseHistory(Set<PurchaseHistory> purchaseHistory){
+        if (purchaseHistory == null){
+            throw new ResourceNotFoundException("User doesn't hava any purchases");
+        }
+        return purchaseHistory;
+    }
+    public static Set<Notification> checkNotifications(Set<Notification> notifications){
+        if (notifications == null){
+            throw new ResourceNotFoundException("User doesn't hava any notifications");
+        }
+        return notifications;
     }
 
 

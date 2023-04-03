@@ -22,12 +22,10 @@ import java.util.*;
 public class ProductController {
 
     private final ProductRepository productRepository;
-    private final OrganizationsRepository organizationsRepository;
     private final ProductService productService;
 
-    public ProductController(ProductRepository productRepository, OrganizationsRepository organizationsRepository, ProductService productService) {
+    public ProductController(ProductRepository productRepository, ProductService productService) {
         this.productRepository = productRepository;
-        this.organizationsRepository = organizationsRepository;
         this.productService = productService;
     }
 

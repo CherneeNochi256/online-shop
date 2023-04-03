@@ -8,6 +8,7 @@ import ru.maxim.effectivemobiletesttask.repository.NotificationRepository;
 import ru.maxim.effectivemobiletesttask.repository.OrganizationsRepository;
 import ru.maxim.effectivemobiletesttask.repository.PurchaseHistoryRepository;
 import ru.maxim.effectivemobiletesttask.repository.UserRepository;
+import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 import java.util.Date;
 import java.util.Set;
@@ -30,10 +31,7 @@ public class AdminService {
     }
 
     public Set<PurchaseHistory> purchaseHistoryByUser(User user) {
-
-        return purchaseHistoryRepository.findByUser(user).orElseThrow(
-                () -> new ResourceNotFoundException("User doesn't have any purchases"));
-
+        return RestPreconditions.checkPurchaseHistory(purchaseHistoryRepository.findByUser(user).get());
     }
 
     public void topUpUserBalance(User user, Double moneyAmount) {
