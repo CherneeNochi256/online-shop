@@ -58,6 +58,7 @@ public class UserService implements UserDetailsService {
 
             purchaseHistory.setUser(user);
             purchaseHistory.setProduct(product);
+            purchaseHistory.setDate(new Date());
             purchaseHistoryRepository.save(purchaseHistory);
         }
     }
@@ -116,4 +117,9 @@ public class UserService implements UserDetailsService {
 
         organizationsRepository.save(resultOrganization);
     }
+
+    public User userById(Long id){
+        return userRepository.findById(id).get();
+    }
+
 }

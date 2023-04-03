@@ -14,8 +14,8 @@ import java.util.Set;
 @Table(name = "usr")
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
@@ -32,7 +32,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
-    @OneToOne(optional = false, mappedBy="user")
+    @OneToOne( mappedBy="user")
     private PurchaseHistory purchaseHistory;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)

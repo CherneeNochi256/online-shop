@@ -1,17 +1,16 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import ru.maxim.effectivemobiletesttask.entity.Organization;
 import ru.maxim.effectivemobiletesttask.entity.Product;
+import ru.maxim.effectivemobiletesttask.entity.PurchaseHistory;
 import ru.maxim.effectivemobiletesttask.entity.User;
-import ru.maxim.effectivemobiletesttask.repository.OrganizationsRepository;
-import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
 import ru.maxim.effectivemobiletesttask.service.ProductService;
+import ru.maxim.effectivemobiletesttask.service.PurchaseHistoryService;
+import ru.maxim.effectivemobiletesttask.service.UserService;
 import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 import java.util.*;
@@ -21,12 +20,15 @@ import java.util.*;
 @RequestMapping("api/main/product")
 public class ProductController {
 
-    private final ProductRepository productRepository;
+    private final UserService userService;
     private final ProductService productService;
+    private final PurchaseHistoryService purchaseHistoryService;
 
-    public ProductController(ProductRepository productRepository, ProductService productService) {
-        this.productRepository = productRepository;
+
+    public ProductController(UserService userService, ProductService productService, PurchaseHistoryService purchaseHistoryService) {
+        this.userService = userService;
         this.productService = productService;
+        this.purchaseHistoryService = purchaseHistoryService;
     }
 
 
@@ -59,6 +61,24 @@ public class ProductController {
 
     @GetMapping()
     public List<Product> getAll() {
-        return RestPreconditions.checkNotNull(productRepository.findAll());
+        return RestPreconditions.checkNotNull(productService.findAll());
+    }
+
+    @PostMapping("buy/{id}")
+    public void buy(@PathVariable("id") Long id,
+                    @AuthenticationPrincipal User user) {
+        Product product = RestPreconditions.checkProduct(productService.productById(id));
+
+        userService.buyProduct(product, user);
+
+    }
+
+    @PostMapping("refund/{id}")
+    public void refund(@PathVariable("id") Long id,
+                       @AuthenticationPrincipal User user) {
+        Product product = RestPreconditions.checkProduct(productService.productById(id));
+        Set<PurchaseHistory> purchaseHistory = RestPreconditions.checkPurchaseHistory(purchaseHistoryService.findByUser(user));
+
+        userService.refundProduct(product, user, purchaseHistory);
     }
 }

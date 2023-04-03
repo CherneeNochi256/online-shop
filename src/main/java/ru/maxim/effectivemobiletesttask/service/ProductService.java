@@ -9,7 +9,9 @@ import ru.maxim.effectivemobiletesttask.repository.OrganizationsRepository;
 import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
 import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ProductService {
@@ -21,6 +23,9 @@ public class ProductService {
         this.organizationsRepository = organizationsRepository;
     }
 
+    public Product productById(Long id){
+        return productRepository.findById(id).get();
+    }
     public void createProductByAdmin(Product product) {
         productRepository.save(product);
     }
@@ -66,5 +71,9 @@ public class ProductService {
 
     private static boolean isOwner(Product productFromDb, User user) {
         return isOwner(user, productFromDb.getOrganization());
+    }
+
+    public List<Product> findAll() {
+        return productRepository.findAll();
     }
 }
