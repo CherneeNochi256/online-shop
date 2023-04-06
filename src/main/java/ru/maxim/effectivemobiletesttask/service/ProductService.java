@@ -4,27 +4,33 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import ru.maxim.effectivemobiletesttask.entity.Organization;
 import ru.maxim.effectivemobiletesttask.entity.Product;
+import ru.maxim.effectivemobiletesttask.entity.PurchaseHistory;
 import ru.maxim.effectivemobiletesttask.entity.User;
 import ru.maxim.effectivemobiletesttask.repository.OrganizationsRepository;
 import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
+import ru.maxim.effectivemobiletesttask.repository.PurchaseHistoryRepository;
 import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
     private final OrganizationsRepository organizationsRepository;
+    private final PurchaseHistoryRepository purchaseHistoryRepository;
 
-    public ProductService(ProductRepository productRepository, OrganizationsRepository organizationsRepository) {
+    public ProductService(ProductRepository productRepository, OrganizationsRepository organizationsRepository, PurchaseHistoryRepository purchaseHistoryRepository) {
         this.productRepository = productRepository;
         this.organizationsRepository = organizationsRepository;
+        this.purchaseHistoryRepository = purchaseHistoryRepository;
     }
 
     public Product productById(Long id){
-        return productRepository.findById(id).get();
+        return productRepository.findById(id).orElse(null);
     }
     public void createProductByAdmin(Product product) {
         productRepository.save(product);
@@ -62,6 +68,33 @@ public class ProductService {
             }
 
             productRepository.save(productFromDb);
+        }
+    }
+
+    public void buyProduct(Product product, User user) {
+        if (product.getPrice() < user.getBalance()) {
+            user.setBalance(user.getBalance() - product.getPrice());
+
+            product.getOrganization().getUser().setBalance(product.getOrganization().getUser().getBalance() + product.getPrice() - (product.getPrice() * 0.05));
+            product.setQuantity(product.getQuantity() - 1);
+
+            PurchaseHistory purchaseHistory = new PurchaseHistory();
+
+            purchaseHistory.setUser(user);
+            purchaseHistory.setProduct(product);
+            purchaseHistory.setDate(new Date());
+            purchaseHistoryRepository.save(purchaseHistory);
+        }
+    }
+
+    public void refundProduct(Product product, User user, Set<PurchaseHistory> purchaseHistory) {
+        for (PurchaseHistory purchase : purchaseHistory) {
+            if (purchase.getProduct().equals(product) && TimeUnit.MILLISECONDS.toHours(new Date().getTime() - purchase.getDate().getTime()) <= 24L) {
+                user.setBalance(user.getBalance() + product.getPrice());
+                product.getOrganization().getUser().setBalance(product.getOrganization().getUser().getBalance() - product.getPrice());
+                product.setQuantity(product.getQuantity() + 1);
+                purchaseHistoryRepository.removeById(purchase.getId());
+            }
         }
     }
 

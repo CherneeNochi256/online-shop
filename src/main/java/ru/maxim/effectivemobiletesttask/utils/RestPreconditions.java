@@ -59,6 +59,12 @@ public class RestPreconditions {
     }
 
 
+    public static Comment checkComment(Comment comment) {
+        if (comment == null){
+            throw new ResourceNotFoundException("Comment not found");
+        }
+        return comment;
+    }
 }
 
 

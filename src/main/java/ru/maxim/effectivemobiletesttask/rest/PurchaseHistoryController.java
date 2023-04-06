@@ -20,12 +20,10 @@ import java.util.Set;
 @RequestMapping("api/main/purchases")
 public class PurchaseHistoryController {
     private final UserService userService;
-    private final AdminService adminService;
-   private final PurchaseHistoryService purchaseHistoryService;
+    private final PurchaseHistoryService purchaseHistoryService;
 
-    public PurchaseHistoryController(UserService userService, AdminService adminService, PurchaseHistoryService purchaseHistoryService) {
+    public PurchaseHistoryController(UserService userService, PurchaseHistoryService purchaseHistoryService) {
         this.userService = userService;
-        this.adminService = adminService;
         this.purchaseHistoryService = purchaseHistoryService;
     }
 
@@ -34,7 +32,7 @@ public class PurchaseHistoryController {
     public Set<PurchaseHistory> specificUserHistory(@PathVariable Long userId) {
         User user = RestPreconditions.checkUser(userService.userById(userId));
 
-        return adminService.purchaseHistoryByUser(user);
+        return RestPreconditions.checkPurchaseHistory(purchaseHistoryService.findByUser(user));
     }
 
     @GetMapping

@@ -10,23 +10,21 @@ import ru.maxim.effectivemobiletesttask.entity.PurchaseHistory;
 import ru.maxim.effectivemobiletesttask.entity.User;
 import ru.maxim.effectivemobiletesttask.service.ProductService;
 import ru.maxim.effectivemobiletesttask.service.PurchaseHistoryService;
-import ru.maxim.effectivemobiletesttask.service.UserService;
 import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 
 @RestController
 @RequestMapping("api/main/product")
 public class ProductController {
 
-    private final UserService userService;
     private final ProductService productService;
     private final PurchaseHistoryService purchaseHistoryService;
 
 
-    public ProductController(UserService userService, ProductService productService, PurchaseHistoryService purchaseHistoryService) {
-        this.userService = userService;
+    public ProductController(ProductService productService, PurchaseHistoryService purchaseHistoryService) {
         this.productService = productService;
         this.purchaseHistoryService = purchaseHistoryService;
     }
@@ -69,7 +67,7 @@ public class ProductController {
                     @AuthenticationPrincipal User user) {
         Product product = RestPreconditions.checkProduct(productService.productById(id));
 
-        userService.buyProduct(product, user);
+        productService.buyProduct(product, user);
 
     }
 
@@ -79,6 +77,6 @@ public class ProductController {
         Product product = RestPreconditions.checkProduct(productService.productById(id));
         Set<PurchaseHistory> purchaseHistory = RestPreconditions.checkPurchaseHistory(purchaseHistoryService.findByUser(user));
 
-        userService.refundProduct(product, user, purchaseHistory);
+        productService.refundProduct(product, user, purchaseHistory);
     }
 }

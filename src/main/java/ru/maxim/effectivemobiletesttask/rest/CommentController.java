@@ -2,14 +2,15 @@ package ru.maxim.effectivemobiletesttask.rest;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import ru.maxim.effectivemobiletesttask.dto.CommentDto;
 import ru.maxim.effectivemobiletesttask.entity.Comment;
 import ru.maxim.effectivemobiletesttask.entity.Product;
 import ru.maxim.effectivemobiletesttask.entity.PurchaseHistory;
 import ru.maxim.effectivemobiletesttask.entity.User;
+import ru.maxim.effectivemobiletesttask.service.CommentService;
 import ru.maxim.effectivemobiletesttask.service.ProductService;
-import ru.maxim.effectivemobiletesttask.service.NotificationService;
 import ru.maxim.effectivemobiletesttask.service.PurchaseHistoryService;
-import ru.maxim.effectivemobiletesttask.service.UserService;
+import ru.maxim.effectivemobiletesttask.utils.EntityMapper;
 import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 import java.util.Set;
@@ -20,22 +21,34 @@ public class CommentController {
 
     private final PurchaseHistoryService purchaseHistoryService;
     private final ProductService productService;
-    private final UserService userService;
+    private final CommentService commentService;
+    private final EntityMapper entityMapper;
 
-    public CommentController( PurchaseHistoryService purchaseHistoryService, ProductService productService, UserService userService) {
+    public CommentController(PurchaseHistoryService purchaseHistoryService, ProductService productService, CommentService commentService, EntityMapper entityMapper) {
         this.purchaseHistoryService = purchaseHistoryService;
         this.productService = productService;
-        this.userService = userService;
+        this.commentService = commentService;
+        this.entityMapper = entityMapper;
     }
 
     @PostMapping("{id}")
-    public void comment(@PathVariable("id") Long id,
-                        @AuthenticationPrincipal User user,
-                        @RequestBody Comment comment) {
+    public void createComment(@PathVariable("id") Long id,
+                              @AuthenticationPrincipal User user,
+                              @RequestBody CommentDto.Request commentDto) {
         Set<PurchaseHistory> purchases = RestPreconditions.checkPurchaseHistory(purchaseHistoryService.findByUser(user));
         Product product = RestPreconditions.checkProduct(productService.productById(id));
 
-        userService.commentProduct(product, user, comment, purchases);
+        Comment comment = entityMapper.commentDtoToEntity(commentDto);
 
+        commentService.commentProduct(product, user, comment, purchases);
+
+    }
+
+
+    @GetMapping("{id}")
+    public CommentDto.Response getComment(@PathVariable Long id) {
+        Comment comment = RestPreconditions.checkComment(commentService.getCommentById(id));
+
+        return entityMapper.entityToCommentDto(comment);
     }
 }

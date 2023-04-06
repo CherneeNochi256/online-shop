@@ -6,6 +6,8 @@ import ru.maxim.effectivemobiletesttask.entity.Grade;
 import ru.maxim.effectivemobiletesttask.entity.Product;
 import ru.maxim.effectivemobiletesttask.entity.PurchaseHistory;
 import ru.maxim.effectivemobiletesttask.entity.User;
+import ru.maxim.effectivemobiletesttask.repository.GradeRepository;
+import ru.maxim.effectivemobiletesttask.service.GradeService;
 import ru.maxim.effectivemobiletesttask.service.ProductService;
 import ru.maxim.effectivemobiletesttask.service.PurchaseHistoryService;
 import ru.maxim.effectivemobiletesttask.service.UserService;
@@ -19,11 +21,13 @@ public class GradeController {
     private final UserService userService;
     private final ProductService productService;
     private final PurchaseHistoryService purchaseHistoryService;
+    private final GradeService gradeService;
 
-    public GradeController(UserService userService, ProductService productService, PurchaseHistoryService purchaseHistoryService) {
+    public GradeController(UserService userService, ProductService productService, PurchaseHistoryService purchaseHistoryService, GradeService gradeService) {
         this.userService = userService;
         this.productService = productService;
         this.purchaseHistoryService = purchaseHistoryService;
+        this.gradeService = gradeService;
     }
 
     @PostMapping("{id}")
@@ -33,6 +37,6 @@ public class GradeController {
         Set<PurchaseHistory> purchases = RestPreconditions.checkPurchaseHistory(purchaseHistoryService.findByUser(user));
         Product product = RestPreconditions.checkProduct(productService.productById(id));
 
-        userService.estimateProduct(product, user, grade, purchases);
+        gradeService.estimateProduct(product, user, grade, purchases);
     }
 }

@@ -30,7 +30,7 @@ public class NotificationController {
     public void notifyUser(@PathVariable("id") Long id,
                            @RequestBody Notification notification) {
         User user = RestPreconditions.checkUser(userService.userById(id));
-        adminService.notifyUser(user, notification);
+        notificationService.notifyUser(user, notification);
     }
 
 

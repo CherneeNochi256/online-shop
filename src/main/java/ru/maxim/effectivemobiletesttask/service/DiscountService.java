@@ -20,6 +20,10 @@ public class DiscountService {
         this.productRepository = productRepository;
     }
 
+    public Discount getDiscountById(Long id){
+        return discountRepository.findById(id).orElse(null);
+    }
+
     public void createDiscountForProduct(Product product, Discount discount) {
         product.setDiscount(discount);
         discountRepository.save(discount);
