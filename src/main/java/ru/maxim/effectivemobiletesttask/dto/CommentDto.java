@@ -4,8 +4,10 @@ package ru.maxim.effectivemobiletesttask.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 
-public class CommentDto {
+
+public class CommentDto implements Serializable {
 
     @Getter
     @Setter

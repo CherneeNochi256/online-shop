@@ -16,6 +16,7 @@ public class DiscountDto implements Serializable {
         private  Long interval;
     }
 
+
     @Getter
     @Setter
     public static class Response{

@@ -35,6 +35,7 @@ public class CommentController {
     public void createComment(@PathVariable("id") Long id,
                               @AuthenticationPrincipal User user,
                               @RequestBody CommentDto.Request commentDto) {
+        RestPreconditions.checkNotNull(commentDto);
         Set<PurchaseHistory> purchases = RestPreconditions.checkPurchaseHistory(purchaseHistoryService.findByUser(user));
         Product product = RestPreconditions.checkProduct(productService.productById(id));
 

@@ -2,15 +2,15 @@ package ru.maxim.effectivemobiletesttask.rest;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import ru.maxim.effectivemobiletesttask.dto.GradeDto;
 import ru.maxim.effectivemobiletesttask.entity.Grade;
 import ru.maxim.effectivemobiletesttask.entity.Product;
 import ru.maxim.effectivemobiletesttask.entity.PurchaseHistory;
 import ru.maxim.effectivemobiletesttask.entity.User;
-import ru.maxim.effectivemobiletesttask.repository.GradeRepository;
 import ru.maxim.effectivemobiletesttask.service.GradeService;
 import ru.maxim.effectivemobiletesttask.service.ProductService;
 import ru.maxim.effectivemobiletesttask.service.PurchaseHistoryService;
-import ru.maxim.effectivemobiletesttask.service.UserService;
+import ru.maxim.effectivemobiletesttask.utils.EntityMapper;
 import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 import java.util.Set;
@@ -18,24 +18,28 @@ import java.util.Set;
 @RestController
 @RequestMapping("api/main/grade")
 public class GradeController {
-    private final UserService userService;
     private final ProductService productService;
     private final PurchaseHistoryService purchaseHistoryService;
     private final GradeService gradeService;
+    private final EntityMapper entityMapper;
 
-    public GradeController(UserService userService, ProductService productService, PurchaseHistoryService purchaseHistoryService, GradeService gradeService) {
-        this.userService = userService;
+    public GradeController(ProductService productService, PurchaseHistoryService purchaseHistoryService, GradeService gradeService, EntityMapper entityMapper) {
         this.productService = productService;
         this.purchaseHistoryService = purchaseHistoryService;
         this.gradeService = gradeService;
+        this.entityMapper = entityMapper;
     }
 
     @PostMapping("{id}")
     public void estimate(@PathVariable("id") Long id,
                          @AuthenticationPrincipal User user,
-                         @RequestBody Grade grade) {
+                         @RequestBody GradeDto.Request gradeDto) {
+
+        RestPreconditions.checkNotNull(gradeDto);
+
         Set<PurchaseHistory> purchases = RestPreconditions.checkPurchaseHistory(purchaseHistoryService.findByUser(user));
         Product product = RestPreconditions.checkProduct(productService.productById(id));
+        Grade grade = entityMapper.gradeDtoToEntity(gradeDto);
 
         gradeService.estimateProduct(product, user, grade, purchases);
     }
