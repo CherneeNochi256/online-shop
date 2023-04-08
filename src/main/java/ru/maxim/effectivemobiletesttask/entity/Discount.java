@@ -23,6 +23,7 @@ public class Discount {
     @OneToMany(mappedBy = "discount",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Product> products;
     private Double discount;
+    @Column(name = "discount_interval")
     private Long interval;
 
 

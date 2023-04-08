@@ -18,6 +18,7 @@ public class Grade {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "grade_value")
     private Double value;
 
     @ManyToOne(fetch = FetchType.EAGER)

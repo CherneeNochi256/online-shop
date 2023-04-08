@@ -16,6 +16,7 @@ public class AdminService {
 
     public void topUpUserBalance(User user, Double moneyAmount) {
         user.setBalance(user.getBalance() + moneyAmount);
+        userRepository.save(user);
     }
 
 

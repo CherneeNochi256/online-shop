@@ -20,6 +20,7 @@ public class Table {
     private Long id;
 
    private String characteristic;
+   @Column(name = "table_value")
    private String value;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
