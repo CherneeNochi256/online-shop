@@ -4,8 +4,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import ru.maxim.effectivemobiletesttask.entity.Discount;
 import ru.maxim.effectivemobiletesttask.entity.Product;
+import ru.maxim.effectivemobiletesttask.exception.ResourceNotFoundException;
 import ru.maxim.effectivemobiletesttask.repository.DiscountRepository;
 import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
+import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 import java.util.Optional;
 import java.util.Set;
@@ -20,7 +22,7 @@ public class DiscountService {
         this.productRepository = productRepository;
     }
 
-    public Discount getDiscountById(Long id){
+    public Discount getDiscountById(Long id) {
         return discountRepository.findById(id).orElse(null);
     }
 
@@ -56,16 +58,11 @@ public class DiscountService {
     }
 
 
-
-
-
-
-
     private void copyProperties(Discount discount, Optional<Discount> discountFromDb) {
-        if (discountFromDb.isPresent()) {
-            BeanUtils.copyProperties(discount, discountFromDb.get(), "id");
+        RestPreconditions.checkDiscount(discountFromDb.orElse(null));
 
-            discountRepository.save(discountFromDb.get());
-        }
+        BeanUtils.copyProperties(discount, discountFromDb.get(), "id");
+
+        discountRepository.save(discountFromDb.get());
     }
 }
