@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,14 +13,10 @@ import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 @RestController
 @RequestMapping("api/main/user")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final EntityMapper entityMapper;
-
-    public UserController(UserService userService, EntityMapper entityMapper) {
-        this.userService = userService;
-        this.entityMapper = entityMapper;
-    }
 
     @GetMapping("{id}")
     public UserDto.Response getUser(@PathVariable("id") Long id) {

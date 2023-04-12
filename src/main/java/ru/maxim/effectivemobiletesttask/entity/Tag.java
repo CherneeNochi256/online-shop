@@ -14,6 +14,8 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 
 public class Tag {
     @Id

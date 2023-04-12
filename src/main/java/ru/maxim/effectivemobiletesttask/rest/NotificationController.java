@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,16 +17,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/main/notification")
+@RequiredArgsConstructor
 public class NotificationController {
     private final UserService userService;
     private final NotificationService notificationService;
     private final EntityMapper entityMapper;
 
-    public NotificationController(UserService userService, NotificationService notificationService, EntityMapper entityMapper) {
-        this.userService = userService;
-        this.notificationService = notificationService;
-        this.entityMapper = entityMapper;
-    }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("{id}")

@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -10,14 +11,11 @@ import ru.maxim.effectivemobiletesttask.repository.OrganizationsRepository;
 import ru.maxim.effectivemobiletesttask.repository.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class OrganizationService {
     private final OrganizationsRepository organizationsRepository;
     private final UserRepository userRepository;
 
-    public OrganizationService(OrganizationsRepository organizationsRepository, UserRepository userRepository) {
-        this.organizationsRepository = organizationsRepository;
-        this.userRepository = userRepository;
-    }
 
     public Organization organizationById(Long id){
         return organizationsRepository.findById(id).orElse(null);

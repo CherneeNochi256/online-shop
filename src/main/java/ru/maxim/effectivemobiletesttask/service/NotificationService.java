@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,10 @@ import java.util.Date;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
     private final NotificationRepository notificationRepository;
 
-    public NotificationService(NotificationRepository notificationRepository) {
-        this.notificationRepository = notificationRepository;
-    }
 
     public Set<Notification> findByUser(User user){
         return notificationRepository.findByUser(user);

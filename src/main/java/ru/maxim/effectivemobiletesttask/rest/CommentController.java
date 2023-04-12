@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.maxim.effectivemobiletesttask.dto.CommentDto;
@@ -17,6 +18,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("api/main/comment")
+@RequiredArgsConstructor
 public class CommentController {
 
     private final PurchaseHistoryService purchaseHistoryService;
@@ -24,12 +26,6 @@ public class CommentController {
     private final CommentService commentService;
     private final EntityMapper entityMapper;
 
-    public CommentController(PurchaseHistoryService purchaseHistoryService, ProductService productService, CommentService commentService, EntityMapper entityMapper) {
-        this.purchaseHistoryService = purchaseHistoryService;
-        this.productService = productService;
-        this.commentService = commentService;
-        this.entityMapper = entityMapper;
-    }
 
     @PostMapping("{id}")
     public void createComment(@PathVariable("id") Long id,

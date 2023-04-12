@@ -13,6 +13,8 @@ import java.util.Set;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 
 public class Discount {
     @Id

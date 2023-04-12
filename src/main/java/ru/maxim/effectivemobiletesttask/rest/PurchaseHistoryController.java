@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,14 +19,11 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("api/main/purchases")
+@RequiredArgsConstructor
 public class PurchaseHistoryController {
     private final UserService userService;
     private final PurchaseHistoryService purchaseHistoryService;
 
-    public PurchaseHistoryController(UserService userService, PurchaseHistoryService purchaseHistoryService) {
-        this.userService = userService;
-        this.purchaseHistoryService = purchaseHistoryService;
-    }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("{userId}")

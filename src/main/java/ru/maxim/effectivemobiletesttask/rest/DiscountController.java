@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,19 +14,13 @@ import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 @RestController
 @RequestMapping("api/main/discount")
+@RequiredArgsConstructor
 public class DiscountController {
 
     private final DiscountService discountService;
     private final ProductService productService;
     private final EntityMapper entityMapper;
 
-
-    public DiscountController(DiscountService discountService, ProductService productService, EntityMapper entityMapper) {
-
-        this.discountService = discountService;
-        this.productService = productService;
-        this.entityMapper = entityMapper;
-    }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("{id}")

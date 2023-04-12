@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.maxim.effectivemobiletesttask.dto.GradeDto;
@@ -17,18 +18,13 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("api/main/grade")
+@RequiredArgsConstructor
 public class GradeController {
     private final ProductService productService;
     private final PurchaseHistoryService purchaseHistoryService;
     private final GradeService gradeService;
     private final EntityMapper entityMapper;
 
-    public GradeController(ProductService productService, PurchaseHistoryService purchaseHistoryService, GradeService gradeService, EntityMapper entityMapper) {
-        this.productService = productService;
-        this.purchaseHistoryService = purchaseHistoryService;
-        this.gradeService = gradeService;
-        this.entityMapper = entityMapper;
-    }
 
     @PostMapping("{id}")
     public void estimate(@PathVariable("id") Long id,

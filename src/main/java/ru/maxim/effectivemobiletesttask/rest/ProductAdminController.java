@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.maxim.effectivemobiletesttask.dto.ProductDto;
@@ -11,15 +12,11 @@ import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 @PreAuthorize("hasAuthority('ADMIN')")
 @RestController
 @RequestMapping("api/main/admin/product")
+@RequiredArgsConstructor
 public class ProductAdminController {
 
     private final ProductService productService;
     private final EntityMapper entityMapper;
-
-    public ProductAdminController(ProductService productService, EntityMapper entityMapper) {
-        this.productService = productService;
-        this.entityMapper = entityMapper;
-    }
 
 
     @PostMapping

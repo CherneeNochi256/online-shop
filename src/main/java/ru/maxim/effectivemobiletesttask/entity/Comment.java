@@ -13,6 +13,8 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

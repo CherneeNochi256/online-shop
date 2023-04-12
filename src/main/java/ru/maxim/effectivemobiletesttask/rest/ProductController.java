@@ -1,6 +1,7 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,18 +22,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/main/product")
+@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
     private final PurchaseHistoryService purchaseHistoryService;
     private final EntityMapper entityMapper;
 
-
-    public ProductController(ProductService productService, PurchaseHistoryService purchaseHistoryService, EntityMapper entityMapper) {
-        this.productService = productService;
-        this.purchaseHistoryService = purchaseHistoryService;
-        this.entityMapper = entityMapper;
-    }
 
 
     @ResponseStatus(HttpStatus.CREATED)

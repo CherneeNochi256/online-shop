@@ -12,6 +12,8 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 
 public class Table {
     @Id

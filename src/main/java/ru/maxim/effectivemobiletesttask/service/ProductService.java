@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import ru.maxim.effectivemobiletesttask.entity.Organization;
@@ -18,16 +19,12 @@ import java.util.concurrent.TimeUnit;
 
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
     private final OrganizationsRepository organizationsRepository;
     private final PurchaseHistoryRepository purchaseHistoryRepository;
 
-    public ProductService(ProductRepository productRepository, OrganizationsRepository organizationsRepository, PurchaseHistoryRepository purchaseHistoryRepository) {
-        this.productRepository = productRepository;
-        this.organizationsRepository = organizationsRepository;
-        this.purchaseHistoryRepository = purchaseHistoryRepository;
-    }
 
     public Product productById(Long id){
         return productRepository.findById(id).orElse(null);

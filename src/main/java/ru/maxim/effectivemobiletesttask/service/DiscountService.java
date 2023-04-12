@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import ru.maxim.effectivemobiletesttask.entity.Discount;
@@ -13,14 +14,11 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class DiscountService {
     private final DiscountRepository discountRepository;
     private final ProductRepository productRepository;
 
-    public DiscountService(DiscountRepository discountRepository, ProductRepository productRepository) {
-        this.discountRepository = discountRepository;
-        this.productRepository = productRepository;
-    }
 
     public Discount getDiscountById(Long id) {
         return discountRepository.findById(id).orElse(null);

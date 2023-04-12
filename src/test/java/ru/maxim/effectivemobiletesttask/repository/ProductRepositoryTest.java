@@ -32,10 +32,10 @@ class ProductRepositoryTest {
 
         //given
 
-        Product product = new Product();
-        product.setQuantity(any());
-        product.setTags(any());
-        product.setPrice(any());
+        Product product = Product.builder()
+                .quantity(15L)
+                .price(123.0)
+                .build();
 
         underTest.save(product);
         //when
@@ -50,24 +50,32 @@ class ProductRepositoryTest {
     void findProductsByTag() {
         //given
 
-        Product product = new Product();
-        product.setQuantity(11L);
-        product.setPrice(121.0);
+        Product product = Product.builder()
+                .quantity(11L)
+                .price(121.0)
+                .build();
 
-        Product product2 = new Product();
-        product2.setQuantity(13L);
-        product2.setPrice(156.0);
+
+        Product product2 = Product.builder()
+                .quantity(13L)
+                .price(156.0)
+                .build();
 
         underTest.save(product);
         underTest.save(product2);
 
-        Tag tag = new Tag();
-        tag.setTag("tag");
-        tag.setProduct(product);
+        Tag tag = Tag.builder()
+                .tag("tag")
+                .product(product)
+                .build();
+
         tagRepository.save(tag);
 
-        tag.setProduct(product2);
-        tagRepository.save(tag);
+        Tag tag2 = Tag.builder()
+                .tag("tag")
+                .product(product2)
+                .build();
+        tagRepository.save(tag2);
 
 
 

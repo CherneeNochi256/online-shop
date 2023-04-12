@@ -14,6 +14,8 @@ import java.util.Set;
 @Setter
 @ToString
 @EqualsAndHashCode
+@Builder
+@AllArgsConstructor
 @RequiredArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Organization {

@@ -10,7 +10,9 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
+@Builder
 @RequiredArgsConstructor
+@AllArgsConstructor
 
 public class Grade {
     @Id

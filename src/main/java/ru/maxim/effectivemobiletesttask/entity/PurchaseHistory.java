@@ -2,17 +2,18 @@ package ru.maxim.effectivemobiletesttask.entity;
 
 import com.fasterxml.jackson.databind.DatabindException;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.Table;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
-@jakarta.persistence.Table(name = "purchase_history")
+@Table(name = "purchase_history")
 @Getter
+@Builder
 @Setter
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class PurchaseHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

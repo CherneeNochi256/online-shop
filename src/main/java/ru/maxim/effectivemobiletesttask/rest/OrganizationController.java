@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -12,15 +13,11 @@ import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 @RestController
 @RequestMapping("api/main/organization")
+@RequiredArgsConstructor
 public class OrganizationController {
     private final OrganizationService organizationService;
     private final EntityMapper entityMapper;
 
-
-    public OrganizationController(OrganizationService organizationService, EntityMapper entityMapper) {
-        this.organizationService = organizationService;
-        this.entityMapper = entityMapper;
-    }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("freeze/{id}")

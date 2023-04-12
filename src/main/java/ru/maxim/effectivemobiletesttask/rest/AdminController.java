@@ -1,6 +1,7 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.maxim.effectivemobiletesttask.entity.User;
@@ -11,18 +12,12 @@ import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 @PreAuthorize("hasAuthority('ADMIN')")
 @RestController
 @RequestMapping("api/main/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
 
     private final AdminService adminService;
     private final UserService userService;
-
-    public AdminController(AdminService adminService, UserService userService) {
-        this.adminService = adminService;
-        this.userService = userService;
-    }
-
-
 
 
     @GetMapping("topUp/{id}")

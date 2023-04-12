@@ -9,7 +9,8 @@ import java.util.Date;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
+@Builder
+@RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class Notification {

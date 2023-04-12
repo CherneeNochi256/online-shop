@@ -19,7 +19,7 @@ class OrganizationsRepositoryTest {
         //given
 
         Organization organization = new Organization();
-        organization.setName(any());
+        organization.setName("organization1");
 
         underTest.save(organization);
         //when
