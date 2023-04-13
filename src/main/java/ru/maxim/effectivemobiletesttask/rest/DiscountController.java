@@ -1,15 +1,16 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.maxim.effectivemobiletesttask.dto.DiscountDto;
+import ru.maxim.effectivemobiletesttask.dto.discount.DiscountDtoRequest;
+import ru.maxim.effectivemobiletesttask.dto.discount.DiscountDtoResponse;
 import ru.maxim.effectivemobiletesttask.entity.Discount;
 import ru.maxim.effectivemobiletesttask.entity.Product;
 import ru.maxim.effectivemobiletesttask.service.DiscountService;
 import ru.maxim.effectivemobiletesttask.service.ProductService;
-import ru.maxim.effectivemobiletesttask.utils.EntityMapper;
 import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 @RestController
@@ -19,63 +20,64 @@ public class DiscountController {
 
     private final DiscountService discountService;
     private final ProductService productService;
-    private final EntityMapper entityMapper;
+    private final ModelMapper mapper;
 
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("{id}")
-    public DiscountDto.Response get(@PathVariable("id") Long id) {
+    public DiscountDtoResponse get(@PathVariable("id") Long id) {
 
         Discount discountById = discountService.getDiscountById(id);
-        return entityMapper.entityToDiscountDto(RestPreconditions.checkDiscount(discountById));
+        Discount discount = RestPreconditions.checkDiscount(discountById);
+        return mapper.map(discount, DiscountDtoResponse.class);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("{productId}")
-    public void createForOne(@RequestBody DiscountDto.Request discountDto,
+    public void createForOne(@RequestBody DiscountDtoRequest discountDto,
                              @PathVariable Long productId) {
         RestPreconditions.checkNotNull(discountDto);
 
-        Discount discount = entityMapper.discountDtoToEntity(discountDto);
+        Discount discount = mapper.map(discountDto, Discount.class);
         Product product = RestPreconditions.checkProduct(productService.productById(productId));
 
-        discountService.createDiscountForProduct(product,discount);
+        discountService.createDiscountForProduct(product, discount);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("tags/{tag}")
-    public void createForGroup(@RequestBody DiscountDto.Request discountDto,
+    public void createForGroup(@RequestBody DiscountDtoRequest discountDto,
                                @PathVariable String tag) {
         RestPreconditions.checkNotNull(discountDto);
-        Discount discount = entityMapper.discountDtoToEntity(discountDto);
+        Discount discount = mapper.map(discountDto, Discount.class);
 
-        discountService.createDiscountForGroup(discount,tag);
+        discountService.createDiscountForGroup(discount, tag);
 
     }
 
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("{id}")
-    public void update(@RequestBody DiscountDto.Request discountDto,
+    public void update(@RequestBody DiscountDtoRequest discountDto,
                        @PathVariable("id") Long discountId) {
         RestPreconditions.checkNotNull(discountDto);
-        Discount discount = entityMapper.discountDtoToEntity(discountDto);
+        Discount discount = mapper.map(discountDto, Discount.class);
 
-        discountService.updateDiscount(discount,discountId);
+        discountService.updateDiscount(discount, discountId);
 
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("tags/{tag}")
-    public void updateForGroup(@RequestBody DiscountDto.Request discountDto,
+    public void updateForGroup(@RequestBody DiscountDtoRequest discountDto,
                                @PathVariable String tag) {
-       RestPreconditions.checkNotNull(discountDto);
+        RestPreconditions.checkNotNull(discountDto);
 
-        Discount discount = entityMapper.discountDtoToEntity(discountDto);
+        Discount discount = mapper.map(discountDto, Discount.class);
 
-        discountService.updateDiscountForGroup(discount,tag);
+        discountService.updateDiscountForGroup(discount, tag);
 
 
     }

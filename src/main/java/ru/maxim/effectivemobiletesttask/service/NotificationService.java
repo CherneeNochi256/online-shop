@@ -23,17 +23,12 @@ public class NotificationService {
         return notificationRepository.findByUser(user);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     public void notifyUser(User user, Notification notification) {
 
-        Notification resultNotification = new Notification();
+        notification.setDateOfCreation(new Date());
+        notification.setUser(user);
 
-        BeanUtils.copyProperties(notification, resultNotification, "id", "user");
-
-        resultNotification.setDateOfCreation(new Date());
-        resultNotification.setUser(user);
-
-        notificationRepository.save(resultNotification);
+        notificationRepository.save(notification);
 
     }
 }
