@@ -1,27 +1,41 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import ru.maxim.effectivemobiletesttask.dto.ApiResponse;
 import ru.maxim.effectivemobiletesttask.dto.user.UserDtoResponse;
-import ru.maxim.effectivemobiletesttask.entity.User;
 import ru.maxim.effectivemobiletesttask.service.UserService;
-import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 @RestController
-@RequestMapping("api/main/user")
+@RequestMapping("api/main/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final ModelMapper mapper;
 
     @GetMapping("{id}")
-    public UserDtoResponse getUser(@PathVariable("id") Long id) {
-        User user = RestPreconditions.checkUser(userService.userById(id));
-        return mapper.map(user, UserDtoResponse.class);
+    public ResponseEntity<UserDtoResponse> getUser(@PathVariable("id") Long id) {
+        return userService.userById(id);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("{id}/balance")
+    public ResponseEntity<UserDtoResponse> topUp(@PathVariable("id") Long userId,
+                                                 @RequestParam Double moneyAmount) {
+        return userService.topUpUserBalance(userId, moneyAmount);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("{id}")
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable("id") Long userId) {
+        return userService.deleteUser(userId);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("{id}/frozen")
+    public ResponseEntity<ApiResponse> freezeUser(@PathVariable("id") Long userId) {
+        return userService.freezeUser(userId);
     }
 
 

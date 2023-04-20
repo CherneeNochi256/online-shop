@@ -1,19 +1,15 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.maxim.effectivemobiletesttask.entity.PurchaseHistory;
+import org.springframework.web.bind.annotation.*;
+import ru.maxim.effectivemobiletesttask.dto.ApiResponse;
+import ru.maxim.effectivemobiletesttask.dto.product.ProductDtoResponse;
+import ru.maxim.effectivemobiletesttask.dto.purchaseHistory.PurchaseHistoryDtoResponse;
 import ru.maxim.effectivemobiletesttask.entity.User;
-import ru.maxim.effectivemobiletesttask.service.AdminService;
-import ru.maxim.effectivemobiletesttask.service.NotificationService;
-import ru.maxim.effectivemobiletesttask.service.PurchaseHistoryService;
-import ru.maxim.effectivemobiletesttask.service.UserService;
-import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
+import ru.maxim.effectivemobiletesttask.service.*;
 
 import java.util.Set;
 
@@ -21,20 +17,30 @@ import java.util.Set;
 @RequestMapping("api/main/purchases")
 @RequiredArgsConstructor
 public class PurchaseHistoryController {
-    private final UserService userService;
     private final PurchaseHistoryService purchaseHistoryService;
 
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("{userId}")
-    public Set<PurchaseHistory> specificUserHistory(@PathVariable Long userId) {
-        User user = RestPreconditions.checkUser(userService.userById(userId));
-
-        return RestPreconditions.checkPurchaseHistory(purchaseHistoryService.findByUser(user));
+    public ResponseEntity<Set<ProductDtoResponse>> specificUserHistory(@PathVariable Long userId) {
+        return purchaseHistoryService.findByUserId(userId);
     }
 
     @GetMapping
-    public Set<PurchaseHistory> history(@AuthenticationPrincipal User user) {
-        return RestPreconditions.checkPurchaseHistory(purchaseHistoryService.findByUser(user));
+    public ResponseEntity<Set<ProductDtoResponse>> history(@AuthenticationPrincipal User user) {
+        return purchaseHistoryService.findByUserId(user.getId());
+    }
+
+
+    @PostMapping("{productId}")
+    public ResponseEntity<PurchaseHistoryDtoResponse> buy(@PathVariable Long productId,
+                                                          @AuthenticationPrincipal User user) {
+        return purchaseHistoryService.buyProduct(productId, user);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<ApiResponse> refund(@PathVariable("id") Long id,
+                                              @AuthenticationPrincipal User user) {
+       return purchaseHistoryService.refundProduct(id, user);
     }
 }

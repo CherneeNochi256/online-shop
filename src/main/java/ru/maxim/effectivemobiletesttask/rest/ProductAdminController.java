@@ -1,14 +1,13 @@
 package ru.maxim.effectivemobiletesttask.rest;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.maxim.effectivemobiletesttask.dto.product.ProductDtoRequest;
 import ru.maxim.effectivemobiletesttask.dto.product.ProductDtoResponse;
-import ru.maxim.effectivemobiletesttask.entity.Product;
 import ru.maxim.effectivemobiletesttask.service.ProductService;
-import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
 @PreAuthorize("hasAuthority('ADMIN')")
 @RestController
@@ -17,28 +16,21 @@ import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 public class ProductAdminController {
 
     private final ProductService productService;
-    private final ModelMapper mapper;
 
 
     @PostMapping
-    public void create(@RequestBody ProductDtoRequest productDto) {
-        RestPreconditions.checkNotNull(productDto);
-        Product product = mapper.map(productDto,Product.class);
-        productService.createProductByAdmin(product);
+    public ResponseEntity<ProductDtoResponse> create(@RequestBody @Valid ProductDtoRequest productDto) {
+        return productService.createProductByAdmin(productDto);
     }
 
     @PutMapping("{id}")
-    public void update(@RequestBody ProductDtoRequest productDto,
-                       @PathVariable("id") Long productId) {
-        RestPreconditions.checkNotNull(productDto);
-        Product product = mapper.map(productDto,Product.class);
-
-        productService.updateProductByAdmin(product,productId);
+    public ResponseEntity<ProductDtoResponse> update(@RequestBody @Valid ProductDtoRequest productDto,
+                                                     @PathVariable("id") Long productId) {
+        return productService.updateProductByAdmin(productDto, productId);
     }
 
     @GetMapping("{id}")
-    public ProductDtoResponse get(@PathVariable("id") Long id) {
-        Product product = RestPreconditions.checkProduct(productService.productById(id));
-        return mapper.map(product,ProductDtoResponse.class);
+    public ResponseEntity<ProductDtoResponse> get(@PathVariable("id") Long id) {
+        return productService.productById(id);
     }
 }
