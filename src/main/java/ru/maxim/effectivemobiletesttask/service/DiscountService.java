@@ -1,66 +1,93 @@
 package ru.maxim.effectivemobiletesttask.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.maxim.effectivemobiletesttask.dto.discount.DiscountDtoRequest;
+import ru.maxim.effectivemobiletesttask.dto.discount.DiscountDtoResponse;
 import ru.maxim.effectivemobiletesttask.entity.Discount;
 import ru.maxim.effectivemobiletesttask.entity.Product;
 import ru.maxim.effectivemobiletesttask.exception.ResourceNotFoundException;
 import ru.maxim.effectivemobiletesttask.repository.DiscountRepository;
 import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
-import ru.maxim.effectivemobiletesttask.utils.RestPreconditions;
 
-import java.util.Optional;
 import java.util.Set;
+
+import static ru.maxim.effectivemobiletesttask.utils.AppConstants.*;
+import static ru.maxim.effectivemobiletesttask.utils.EntityUtils.copyProperties;
 
 @Service
 @RequiredArgsConstructor
 public class DiscountService {
     private final DiscountRepository discountRepository;
     private final ProductRepository productRepository;
+    private final ModelMapper mapper;
 
 
-    public Discount getDiscountById(Long id) {
-        return discountRepository.findById(id).orElse(null);
+    public ResponseEntity<DiscountDtoResponse> getDiscountById(Long id) {
+        Discount discount = discountRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(DISCOUNT, ID, id));
+
+        return ResponseEntity.ok(mapper.map(discount, DiscountDtoResponse.class));
     }
 
-    public void createDiscountForProduct(Product product, Discount discount) {
+    public ResponseEntity<DiscountDtoResponse> createDiscountForProduct(DiscountDtoRequest discountDto, Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException(PRODUCT, ID, productId));
+
+        Discount discount = mapper.map(discountDto, Discount.class);
+
         product.setDiscount(discount);
-        discountRepository.save(discount);
+
+        Discount newDiscount = discountRepository.save(discount);
+        productRepository.save(product);
+
+        DiscountDtoResponse response = mapper.map(newDiscount, DiscountDtoResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    public void createDiscountForGroup(Discount discount, String tag) {
-        Set<Product> productsFromDb = productRepository.findProductsByTag(tag);
+    public ResponseEntity<DiscountDtoResponse> createDiscountForGroup(DiscountDtoRequest discountDto, String tag) {
+        Discount discount = mapper.map(discountDto, Discount.class);
+
+        Set<Product> productsFromDb = productRepository.findProductsByTag(tag)
+                .orElseThrow(() -> new ResourceNotFoundException(PRODUCT, TAG, tag));
 
         for (Product product : productsFromDb) {
             product.setDiscount(discount);
         }
-        discountRepository.save(discount);
+        Discount newDiscount = discountRepository.save(discount);
+
+        DiscountDtoResponse response = mapper.map(newDiscount, DiscountDtoResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 
-    public void updateDiscount(Discount discount, Long discountId) {
-        Optional<Discount> discountFromDb = discountRepository.findById(discountId);
+    public ResponseEntity<DiscountDtoResponse> updateDiscount(DiscountDtoRequest discountDto, Long discountId) {
+        Discount discountFromDb = discountRepository.findById(discountId)
+                .orElseThrow(() -> new ResourceNotFoundException(DISCOUNT, ID, discountId));
 
-        copyProperties(discount, discountFromDb);
+        copyProperties(discountDto, discountFromDb);
+
+        Discount updatedDiscount = discountRepository.save(discountFromDb);
+
+        DiscountDtoResponse response = mapper.map(updatedDiscount, DiscountDtoResponse.class);
+
+        return ResponseEntity.ok(response);
     }
 
 
-    public void updateDiscountForGroup(Discount discount, String tag) {
+    public ResponseEntity<DiscountDtoResponse> updateDiscountForGroup(DiscountDtoRequest discountDto, String tag) {
+        Product productFromDb = productRepository.findProductByTag(tag)
+                .orElseThrow(() -> new ResourceNotFoundException(PRODUCT, TAG, tag));
 
-        Product productFromDb = productRepository.findProductByTag(tag);
+        Long discountId = productFromDb.getDiscount().getId();
 
-        Optional<Discount> discountFromDb = discountRepository.findById(productFromDb.getDiscount().getId());
-
-        copyProperties(discount, discountFromDb);
+        return updateDiscount(discountDto, discountId);
     }
 
 
-    private void copyProperties(Discount discount, Optional<Discount> discountFromDb) {
-        RestPreconditions.checkDiscount(discountFromDb.orElse(null));
-
-        BeanUtils.copyProperties(discount, discountFromDb.get(), "id");
-
-        discountRepository.save(discountFromDb.get());
-    }
 }

@@ -4,22 +4,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import ru.maxim.effectivemobiletesttask.exception.ResourceIsNullException;
+import ru.maxim.effectivemobiletesttask.exception.CanNotPerformActionException;
 import ru.maxim.effectivemobiletesttask.exception.ResourceNotFoundException;
-import ru.maxim.effectivemobiletesttask.utils.AppError;
+import ru.maxim.effectivemobiletesttask.dto.ApiResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(value = ResourceNotFoundException.class)
-    public ResponseEntity<AppError> catchResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
-        return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), e.getMessage()), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseBody
+    public ResponseEntity<ApiResponse> resolveException(ResourceNotFoundException exception) {
+        ApiResponse apiResponse = exception.getApiResponse();
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchResourceIsNullException(ResourceIsNullException e){
-        return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), e.getMessage()), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ApiResponse> resolveException(CanNotPerformActionException exception){
+        ApiResponse apiResponse = exception.getApiResponse();
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
 
     }
 }
