@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.dto.discount;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DiscountDtoRequest implements Serializable {
+    @NotNull
     private Double discount;
+    @NotNull
     private Long interval;
 }

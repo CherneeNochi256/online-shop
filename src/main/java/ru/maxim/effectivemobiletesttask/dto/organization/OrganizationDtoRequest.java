@@ -1,5 +1,6 @@
 package ru.maxim.effectivemobiletesttask.dto.organization;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrganizationDtoRequest implements Serializable {
+    @NotBlank
     private String name;
+    @NotBlank
     private String description;
 }
