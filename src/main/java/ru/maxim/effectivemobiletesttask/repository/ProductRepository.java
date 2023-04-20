@@ -16,13 +16,12 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
 
    @Query("select p from Product p join Tag t on p.id = t.product.id where t.tag = :tag")
-   Set<Product> findProductsByTag(String tag);
+   Optional<Set<Product>>findProductsByTag(String tag);
 
    @Query("select p from Product p join Tag t on p.id = t.product.id where t.tag = :tag")
-   Product findProductByTag(String tag);
+   Optional<Product> findProductByTag(String tag);
 
    @Query("select  p from Product p join Organization o on p.organization = o where o.status ='ACTIVE' ")
-   List<Product> findAll();
-
+   Optional<Set<Product>> findAllWhereOrganizationStatusIsActive();
 
 }
