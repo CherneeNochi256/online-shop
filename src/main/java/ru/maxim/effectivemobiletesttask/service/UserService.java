@@ -14,8 +14,7 @@ import ru.maxim.effectivemobiletesttask.entity.User;
 import ru.maxim.effectivemobiletesttask.exception.ResourceNotFoundException;
 import ru.maxim.effectivemobiletesttask.repository.UserRepository;
 
-import static ru.maxim.effectivemobiletesttask.utils.AppConstants.ID;
-import static ru.maxim.effectivemobiletesttask.utils.AppConstants.USER;
+import static ru.maxim.effectivemobiletesttask.utils.AppConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,12 +25,8 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-        return user;
+        return userRepository.findByUsername(username)
+                .orElseThrow(()-> new ResourceNotFoundException(USER,NAME,username));
     }
 
     public void createUser(User user){
