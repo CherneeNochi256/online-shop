@@ -117,9 +117,9 @@ Test them using postman or any other rest client.
 
 ```json
 {
-"username" : "Alex",
-"email" : "alex@gmail.com",
-"password" : "Password123"
+    "username" : "Alex",
+    "email" : "alex@gmail.com",
+    "password" : "Password123"
 }
 ```
 
@@ -127,8 +127,8 @@ Test them using postman or any other rest client.
 
 ```json
 {
-"username" : "Alex",
-"password" : "Password123"
+    "username" : "Alex",
+    "password" : "Password123"
 }
 ```
 
@@ -137,91 +137,105 @@ Test them using postman or any other rest client.
 
 ```json
 {
-"username" : "Alex",
-"password" : "Password123"
+    "username" : "Alex",
+    "password" : "Password123"
 }
 ```
 
 ```param
-productId = 10
+    productId = 10
 ```
 
 ##### <a id="create-discount">Create discount -> /api/v1/discounts </a>
 
 ```json
-"discount" : 0.15,
-"interval" : 36000
+    "discount" : 0.15,
+    "interval" : 36000
 ```
 ```param
-productId = 9
+    productId = 9
 ```
 
 ##### <a id="create-discount-for-group">Create discount for a group -> /api/v1/discounts/products </a>
 
 ```json
-"discount" : 0.15,
-"interval" : 36000
+{
+    "discount" : 0.15,
+    "interval" : 36000
+}
 ```
 ```param
-productTag = 9
+    productTag = 9
 ```
 ##### <a id="update-discount">Update discount -> /api/v1/discounts  </a>
 
 ```json
-"discount" : 0.12,
-"interval" : 48000
+{
+    "discount" : 0.12,
+    "interval" : 48000
+}
 ```
 ```param
-productId = 7
+    productId = 7
 ```
 
 ##### <a id="update-discount-for-group">Update discount for a group -> /api/v1/discounts </a>
 
 ```json
-"discount" : 0.3,
-"interval" : 36000
+{
+    "discount" : 0.3,
+    "interval" : 36000
+}
 ```
 ```param
-productTag = 11 
+    productTag = 11 
 ```
 
 ##### <a id="create-grade"> Estimate the product -> api/v1/grades </a>
 
 ```json
-"value" : 4.7
+{
+    "value" : 4.7
+}
 ```
 ```param
-productTag = 16 
+    productTag = 16 
 ```
 
 ##### <a id="create-notification"> Notify the user -> api/v1/notifications </a>
 
 ```json
-"header" : "Your header",
-"text" : "Your notification"
+{
+    "header" : "Your header",
+    "text" : "Your notification"
+}
 ```
 ```param
-userId = 3 
+    userId = 3 
 ```
 
 ##### <a id="create-organization"> Create an organization -> api/v1/organizations </a>
 
 
 ```json
-"name" : "Organization name",
-"description" : "Organization description"
+{
+    "name" : "Organization name",
+    "description" : "Organization description"
+}
 ```
 
 ##### <a id="update-product-by-admin"> Update product by admin -> api/v1/admin/products/{id} </a>
 
 ```json
-"title" : "Product title",
-"price" : 123.4,
-"quantity" : 1000,
-"organizationName" : "organization name"
+{
+    "title" : "Product title",
+    "price" : 123.4,
+    "quantity" : 1000,
+    "organizationName" : "organization name"
+}
 ```
 ```param
-productId = 123
+    productId = 123
 ```
 
 ##### <a id="create-product-by-admin"> Create product by admin -> api/v1/admin/products </a>
@@ -229,28 +243,32 @@ productId = 123
 ##### <a id="update-product"> Create product -> api/v1/products/{id} </a>
 
 ```json
-"title" : "Product title",
-"price" : 123.4,
-"quantity" : 1000,
-"organizationName" : "organization name"
+{
+    "title" : "Product title",
+    "price" : 123.4,
+    "quantity" : 1000,
+    "organizationName" : "organization name"
+}
 ```
 
 ##### <a id="buy-product"> Buy the product -> api/v1/purchases </a>
 ##### <a id="refund-product"> Refund the product -> api/v1/purchases </a>
 
 ```param
-productId = 102
+    productId = 102
 ```
 
 ##### <a id="top-up-user-balance"> Top up the user balance -> api/v1/users/{id}/balance </a>
 
 ```param
-moneyAmount = 102.5
+    moneyAmount = 102.5
 ```
 
 ##### <a id="validate-form"> Validate the form -> api/v1/validation-forms/{id} </a>
 
 ```json
-"message" : "smt is wrong",
-"approved" : false
+{
+    "message" : "smt is wrong",
+    "approved" : false
+}
 ```
