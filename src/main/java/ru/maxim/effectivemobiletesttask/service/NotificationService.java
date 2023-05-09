@@ -27,7 +27,7 @@ public class NotificationService {
     private final ModelMapper mapper;
 
 
-    public ResponseEntity<Set<NotificationDtoResponse>> findByUser(User user){
+    public ResponseEntity<Set<NotificationDtoResponse>> findByUser(User user) {
         Set<Notification> notifications = notificationRepository.findByUser(user)
                 .orElseThrow(() -> new ResourceNotFoundException(NOTIFICATION, USER, user.getId()));
 
@@ -43,14 +43,14 @@ public class NotificationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(USER, ID, userId));
 
-        Notification notification = mapper.map(notificationDto,Notification.class);
+        Notification notification = mapper.map(notificationDto, Notification.class);
 
         notification.setDateOfCreation(new Date());
         notification.setUser(user);
 
-        Notification savedNotification = notificationRepository.save(notification);
+        notificationRepository.save(notification);
 
-        NotificationDtoResponse response = mapper.map(savedNotification, NotificationDtoResponse.class);
+        NotificationDtoResponse response = mapper.map(notification, NotificationDtoResponse.class);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
 
     }

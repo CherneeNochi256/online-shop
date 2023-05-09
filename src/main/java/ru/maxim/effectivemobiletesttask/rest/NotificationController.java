@@ -14,15 +14,15 @@ import ru.maxim.effectivemobiletesttask.service.NotificationService;
 import java.util.Set;
 
 @RestController
-@RequestMapping("api/main/notification")
+@RequestMapping("api/v1/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
 
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("{userId}")
-    public ResponseEntity<NotificationDtoResponse> notifyUser(@PathVariable Long userId,
+    @PostMapping
+    public ResponseEntity<NotificationDtoResponse> notifyUser(@RequestParam Long userId,
                                                               @RequestBody @Valid NotificationDtoRequest notificationDto) {
         return notificationService.notifyUser(userId, notificationDto);
     }

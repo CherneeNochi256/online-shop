@@ -57,6 +57,7 @@ public class DiscountService {
 
         for (Product product : productsFromDb) {
             product.setDiscount(discount);
+            productRepository.save(product);
         }
         Discount newDiscount = discountRepository.save(discount);
 

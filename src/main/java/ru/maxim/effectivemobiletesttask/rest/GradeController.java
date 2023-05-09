@@ -11,16 +11,16 @@ import ru.maxim.effectivemobiletesttask.entity.User;
 import ru.maxim.effectivemobiletesttask.service.GradeService;
 
 @RestController
-@RequestMapping("api/main/grade")
+@RequestMapping("api/v1/grades")
 @RequiredArgsConstructor
 public class GradeController {
-       private final GradeService gradeService;
+    private final GradeService gradeService;
 
 
-    @PostMapping("{userId}")
-    public ResponseEntity<GradeDtoResponse> estimate(@PathVariable Long userId,
+    @PostMapping
+    public ResponseEntity<GradeDtoResponse> estimate(@RequestParam Long productId,
                                                      @AuthenticationPrincipal User user,
                                                      @RequestBody @Valid GradeDtoRequest gradeDto) {
-       return gradeService.estimateProduct(userId, user, gradeDto);
+        return gradeService.estimateProduct(productId, user, gradeDto);
     }
 }

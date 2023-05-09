@@ -26,14 +26,14 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .orElseThrow(()-> new ResourceNotFoundException(USER,NAME,username));
+                .orElseThrow(() -> new ResourceNotFoundException(USER, NAME, username));
     }
 
-    public void createUser(User user){
+    public void createUser(User user) {
         userRepository.save(user);
     }
 
-    public ResponseEntity<UserDtoResponse> userById(Long id){
+    public ResponseEntity<UserDtoResponse> userById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(USER, ID, id));
 
@@ -54,7 +54,9 @@ public class UserService implements UserDetailsService {
 
 
     public ResponseEntity<ApiResponse> deleteUser(Long userId) {
-        userRepository.deleteById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(USER, ID, userId));
+        userRepository.delete(user);
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "You have successfully deleted the user with id: " + userId));
     }
 
@@ -65,7 +67,6 @@ public class UserService implements UserDetailsService {
         user.getRoles().add(Role.FROZEN);
         userRepository.save(user);
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "You have successfully frozen the user with id: " + userId));
-
     }
 
 }

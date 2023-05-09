@@ -13,15 +13,19 @@ import ru.maxim.effectivemobiletesttask.dto.auth.AuthenticationRequest;
 import ru.maxim.effectivemobiletesttask.dto.auth.AuthenticationResponse;
 import ru.maxim.effectivemobiletesttask.dto.auth.RegisterRequest;
 import ru.maxim.effectivemobiletesttask.entity.Role;
+import ru.maxim.effectivemobiletesttask.entity.Token;
 import ru.maxim.effectivemobiletesttask.entity.User;
+import ru.maxim.effectivemobiletesttask.exception.ResourceNotFoundException;
+import ru.maxim.effectivemobiletesttask.repository.TokenRepository;
 import ru.maxim.effectivemobiletesttask.repository.UserRepository;
 import ru.maxim.effectivemobiletesttask.security.JwtService;
-import ru.maxim.effectivemobiletesttask.entity.Token;
-import ru.maxim.effectivemobiletesttask.repository.TokenRepository;
 import ru.maxim.effectivemobiletesttask.security.token.TokenType;
 
 import java.io.IOException;
 import java.util.Collections;
+
+import static ru.maxim.effectivemobiletesttask.utils.AppConstants.NAME;
+import static ru.maxim.effectivemobiletesttask.utils.AppConstants.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -97,14 +101,14 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public AuthenticationResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userName;
 
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-            return;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
         }
 
         refreshToken = authHeader.substring(7);
@@ -113,7 +117,7 @@ public class AuthenticationService {
         if (userName != null) {
 
             var user = this.repository.findByUsername(userName)
-                    .orElseThrow();
+                    .orElseThrow(()->new ResourceNotFoundException(USER,NAME,userName));
 
             if (jwtService.isTokenValid(refreshToken, user)) {
 
@@ -126,8 +130,10 @@ public class AuthenticationService {
                         .refreshToken(refreshToken)
                         .build();
 
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+//                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);  //it produced refreshToken test to fall due to it produced response type to be Content type 'application/octet-stream'
+                return authResponse;
             }
         }
+        return null;
     }
 }

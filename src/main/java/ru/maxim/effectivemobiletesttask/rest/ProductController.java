@@ -3,7 +3,7 @@ package ru.maxim.effectivemobiletesttask.rest;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,25 +12,18 @@ import org.springframework.web.bind.annotation.*;
 import ru.maxim.effectivemobiletesttask.dto.product.ProductDtoRequest;
 import ru.maxim.effectivemobiletesttask.dto.product.ProductDtoResponse;
 import ru.maxim.effectivemobiletesttask.dto.product.ProductUpdateRequest;
-import ru.maxim.effectivemobiletesttask.entity.Product;
 import ru.maxim.effectivemobiletesttask.entity.User;
-import ru.maxim.effectivemobiletesttask.service.OrganizationService;
 import ru.maxim.effectivemobiletesttask.service.ProductService;
 
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("api/main/product")
+@RequestMapping("api/v1/products")
 @RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
-    private final OrganizationService organizationService;
-    private final ModelMapper mapper;
-
 
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('ORG_OWNER')")
@@ -53,8 +46,11 @@ public class ProductController {
         return productService.productById(id);
     }
 
-    @GetMapping()
-    public ResponseEntity<Set<ProductDtoResponse>> getAll() {
-        return productService.findAll();
+    @GetMapping
+    public ResponseEntity<Set<ProductDtoResponse>> getAll(@RequestParam(required = false, defaultValue = "10") Integer size,
+                                                          @RequestParam(required = false, defaultValue = "0") Integer page)
+
+    {
+        return productService.findAll(PageRequest.of(page,size));
     }
 }

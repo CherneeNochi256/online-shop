@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.maxim.effectivemobiletesttask.entity.User;
 import ru.maxim.effectivemobiletesttask.security.token.TokenType;
 
 @Data
@@ -22,6 +21,7 @@ public class Token {
     @Column(unique = true)
     public String token;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     public TokenType tokenType = TokenType.BEARER;
 

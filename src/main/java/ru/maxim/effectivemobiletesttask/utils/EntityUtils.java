@@ -31,15 +31,15 @@ public class EntityUtils {
             throw new CanNotPerformActionException("User is not the owner of the product");
     }
 
-    public static void isOrganizationActive(Organization organization){
+    public static void isOrganizationActive(Organization organization) {
         if (!organization.getStatus().equals("ACTIVE"))
-            throw new CanNotPerformActionException("Organization status is frozen");
+            throw new CanNotPerformActionException("Organization is on checking or frozen");
     }
 
-    public static void canBuyAProduct(User user,Product product){
+    public static void canBuyAProduct(User user, Product product) {
         if (!(product.getPrice() < user.getBalance())) {
             throw new CanNotPerformActionException("User doesn't have enough money");
-        }else if (product.getQuantity() <= 0 ){
+        } else if (product.getQuantity() <= 0) {
             throw new CanNotPerformActionException("Product has been sold");
         }
     }
@@ -49,12 +49,12 @@ public class EntityUtils {
             throw new CanNotPerformActionException("Product refund date has expired");
     }
 
-    private static String[] getNullPropertyNames (Object source) {
+    private static String[] getNullPropertyNames(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
 
         Set<String> emptyNames = new HashSet<>();
-        for(java.beans.PropertyDescriptor pd : pds) {
+        for (java.beans.PropertyDescriptor pd : pds) {
             Object srcValue = src.getPropertyValue(pd.getName());
             if (srcValue == null) emptyNames.add(pd.getName());
         }

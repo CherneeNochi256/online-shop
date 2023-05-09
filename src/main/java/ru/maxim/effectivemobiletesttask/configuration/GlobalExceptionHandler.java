@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import ru.maxim.effectivemobiletesttask.dto.ApiResponse;
 import ru.maxim.effectivemobiletesttask.exception.CanNotPerformActionException;
 import ru.maxim.effectivemobiletesttask.exception.ResourceNotFoundException;
-import ru.maxim.effectivemobiletesttask.dto.ApiResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -20,7 +20,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResponse> resolveException(CanNotPerformActionException exception){
+    public ResponseEntity<ApiResponse> resolveException(CanNotPerformActionException exception) {
         ApiResponse apiResponse = exception.getApiResponse();
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
 

@@ -5,7 +5,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.maxim.effectivemobiletesttask.dto.discount.DiscountDtoResponse;
 import ru.maxim.effectivemobiletesttask.dto.grade.GradeDtoRequest;
 import ru.maxim.effectivemobiletesttask.dto.grade.GradeDtoResponse;
 import ru.maxim.effectivemobiletesttask.entity.Grade;
@@ -41,19 +40,15 @@ public class GradeService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(PRODUCT, ID, productId));
 
-        Grade grade = mapper.map(gradeDto, Grade.class);
-
-
         for (PurchaseHistory purchase : purchases) {
             if (purchase.getProduct().equals(product)) {
 
-                Grade resultGrade = new Grade();
 
-                resultGrade.setUser(user);
-                resultGrade.setValue(grade.getValue());
-                resultGrade.setProduct(product);
+                Grade grade = mapper.map(gradeDto, Grade.class);
+                grade.setUser(user);
+                grade.setProduct(product);
 
-                Grade savedGrade = gradeRepository.save(resultGrade);
+                Grade savedGrade = gradeRepository.save(grade);
 
                 GradeDtoResponse response = mapper.map(savedGrade, GradeDtoResponse.class);
 

@@ -2,7 +2,6 @@ package ru.maxim.effectivemobiletesttask.entity;
 
 
 import jakarta.persistence.*;
-
 import lombok.*;
 
 @Entity
@@ -21,9 +20,9 @@ public class Table {
     @Column(name = "id", nullable = false)
     private Long id;
 
-   private String characteristic;
-   @Column(name = "table_value")
-   private String value;
+    private String characteristic;
+    @Column(name = "table_value")
+    private String value;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "product_id", nullable = false)

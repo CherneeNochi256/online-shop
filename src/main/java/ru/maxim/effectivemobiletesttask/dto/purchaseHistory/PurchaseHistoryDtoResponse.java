@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.maxim.effectivemobiletesttask.dto.product.ProductDtoResponseIdAndTitle;
-import ru.maxim.effectivemobiletesttask.dto.user.UserDtoResponse;
-import ru.maxim.effectivemobiletesttask.dto.product.ProductDtoResponse;
 import ru.maxim.effectivemobiletesttask.dto.user.UserDtoResponseIdAndUsername;
 import ru.maxim.effectivemobiletesttask.entity.PurchaseHistory;
 

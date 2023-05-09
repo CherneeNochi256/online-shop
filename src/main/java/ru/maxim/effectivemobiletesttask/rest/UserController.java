@@ -9,7 +9,7 @@ import ru.maxim.effectivemobiletesttask.dto.user.UserDtoResponse;
 import ru.maxim.effectivemobiletesttask.service.UserService;
 
 @RestController
-@RequestMapping("api/main/users")
+@RequestMapping("api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;

@@ -33,15 +33,15 @@ public class PurchaseHistoryService {
     private final ModelMapper mapper;
 
 
-    public ResponseEntity<Set<ProductDtoResponse>> findByUserId(Long userId) {
+    public ResponseEntity<Set<PurchaseHistoryDtoResponse>> findByUserId(Long userId) {
         User userFromDb = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(USER, ID, userId));
 
         Set<PurchaseHistory> purchases = purchaseHistoryRepository.findByUser(userFromDb)
                 .orElseThrow(() -> new ResourceNotFoundException(PURCHASE, USER, userId));
 
-        Set<ProductDtoResponse> response = purchases.stream()
-                .map(p -> mapper.map(p, ProductDtoResponse.class))
+        Set<PurchaseHistoryDtoResponse> response = purchases.stream()
+                .map(p -> mapper.map(p, PurchaseHistoryDtoResponse.class))
                 .collect(Collectors.toSet());
 
         return ResponseEntity.ok(response);
@@ -66,6 +66,8 @@ public class PurchaseHistoryService {
         purchaseHistory.setProduct(product);
         purchaseHistory.setDate(new Date());
 
+        userRepository.save(user);
+        userRepository.save(owner);
         PurchaseHistory savedPurchase = purchaseHistoryRepository.save(purchaseHistory);
 
         PurchaseHistoryDtoResponse response = mapper.map(savedPurchase, PurchaseHistoryDtoResponse.class);
@@ -93,6 +95,8 @@ public class PurchaseHistoryService {
                 owner.setBalance(owner.getBalance() - product.getPrice() + (product.getPrice() * 0.05));
                 product.setQuantity(product.getQuantity() + 1);
 
+                userRepository.save(user);
+                userRepository.save(owner);
                 purchaseHistoryRepository.removeById(purchase.getId());
 
                 return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "You have successfully refund the product with id: " + productId));

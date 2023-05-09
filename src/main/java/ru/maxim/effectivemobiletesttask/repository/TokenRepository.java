@@ -1,10 +1,11 @@
 package ru.maxim.effectivemobiletesttask.repository;
 
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.maxim.effectivemobiletesttask.entity.Token;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface TokenRepository extends JpaRepository<Token, Integer> {
 

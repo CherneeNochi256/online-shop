@@ -11,18 +11,18 @@ import ru.maxim.effectivemobiletesttask.entity.User;
 import ru.maxim.effectivemobiletesttask.service.CommentService;
 
 @RestController
-@RequestMapping("api/main/comments")
+@RequestMapping("api/v1/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
 
 
-    @PostMapping("{productId}")
-    public ResponseEntity<CommentDtoResponse> createComment(@PathVariable Long productId,
+    @PostMapping
+    public ResponseEntity<CommentDtoResponse> createComment(@RequestParam Long productId,
                                                             @AuthenticationPrincipal User user,
                                                             @RequestBody @Valid CommentDtoRequest commentDto) {
-       return commentService.commentProduct(productId, user, commentDto);
+        return commentService.commentProduct(productId, user, commentDto);
     }
 
 

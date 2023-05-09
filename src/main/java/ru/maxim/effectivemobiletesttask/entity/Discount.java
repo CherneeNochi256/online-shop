@@ -1,7 +1,7 @@
 package ru.maxim.effectivemobiletesttask.entity;
 
-import jakarta.persistence.*;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Set;
@@ -22,7 +22,7 @@ public class Discount {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToMany(mappedBy = "discount",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Product> products;
     private Double discount;
     @Column(name = "discount_interval")

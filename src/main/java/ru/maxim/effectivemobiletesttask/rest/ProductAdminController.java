@@ -9,28 +9,22 @@ import ru.maxim.effectivemobiletesttask.dto.product.ProductDtoRequest;
 import ru.maxim.effectivemobiletesttask.dto.product.ProductDtoResponse;
 import ru.maxim.effectivemobiletesttask.service.ProductService;
 
-@PreAuthorize("hasAuthority('ADMIN')")
 @RestController
-@RequestMapping("api/main/admin/product")
+@RequestMapping("api/v1/admin/products")
 @RequiredArgsConstructor
 public class ProductAdminController {
 
     private final ProductService productService;
 
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductDtoResponse> create(@RequestBody @Valid ProductDtoRequest productDto) {
         return productService.createProductByAdmin(productDto);
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("{id}")
     public ResponseEntity<ProductDtoResponse> update(@RequestBody @Valid ProductDtoRequest productDto,
                                                      @PathVariable("id") Long productId) {
         return productService.updateProductByAdmin(productDto, productId);
-    }
-
-    @GetMapping("{id}")
-    public ResponseEntity<ProductDtoResponse> get(@PathVariable("id") Long id) {
-        return productService.productById(id);
     }
 }

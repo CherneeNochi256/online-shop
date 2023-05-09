@@ -1,15 +1,15 @@
 package ru.maxim.effectivemobiletesttask.entity;
 
+import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.*;
-
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
 @Entity
-@jakarta.persistence.Table(name = "product")
+@Table(name = "product")
 @Getter
 @Setter
 @ToString
@@ -30,21 +30,21 @@ public class Product implements Serializable {
     private Double price;
     private Long quantity;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "discount_id")
     private Discount discount;
 
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Comment> comments;
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Tag> tags;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "product")
-    private Set<Table> tables;
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ru.maxim.effectivemobiletesttask.entity.Table> tables;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Grade> grades;
 
 
-    @OneToOne(optional = false, mappedBy="product")
+    @OneToOne(optional = false, mappedBy = "product")
     private PurchaseHistory purchaseHistory;
 
 }

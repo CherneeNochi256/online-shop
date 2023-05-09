@@ -10,7 +10,7 @@ import ru.maxim.effectivemobiletesttask.dto.discount.DiscountDtoResponse;
 import ru.maxim.effectivemobiletesttask.service.DiscountService;
 
 @RestController
-@RequestMapping("api/main/discount")
+@RequestMapping("api/v1/discounts")
 @RequiredArgsConstructor
 public class DiscountController {
 
@@ -24,17 +24,17 @@ public class DiscountController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("{productId}")
+    @PostMapping
     public ResponseEntity<DiscountDtoResponse> createForOne(@RequestBody @Valid DiscountDtoRequest discountDto,
-                                                            @PathVariable Long productId) {
-       return discountService.createDiscountForProduct(discountDto, productId);
+                                                            @RequestParam Long productId) {
+        return discountService.createDiscountForProduct(discountDto, productId);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("tags/{tag}")
+    @PostMapping("products")
     public ResponseEntity<DiscountDtoResponse> createForGroup(@RequestBody @Valid DiscountDtoRequest discountDto,
-                                                              @PathVariable String tag) {
-       return discountService.createDiscountForGroup(discountDto, tag);
+                                                              @RequestParam String tag) {
+        return discountService.createDiscountForGroup(discountDto, tag);
     }
 
 
@@ -47,10 +47,10 @@ public class DiscountController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("tags/{tag}")
+    @PutMapping
     public ResponseEntity<DiscountDtoResponse> updateForGroup(@RequestBody @Valid DiscountDtoRequest discountDto,
-                                                              @PathVariable String tag) {
-       return discountService.updateDiscountForGroup(discountDto, tag);
+                                                              @RequestParam String tag) {
+        return discountService.updateDiscountForGroup(discountDto, tag);
     }
 
 }

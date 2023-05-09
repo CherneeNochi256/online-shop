@@ -3,7 +3,6 @@ package ru.maxim.effectivemobiletesttask.dto.comment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.maxim.effectivemobiletesttask.dto.user.UserDtoResponse;
 import ru.maxim.effectivemobiletesttask.dto.user.UserDtoResponseIdAndUsername;
 import ru.maxim.effectivemobiletesttask.entity.Comment;
 

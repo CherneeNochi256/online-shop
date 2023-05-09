@@ -2,6 +2,7 @@ package ru.maxim.effectivemobiletesttask.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.maxim.effectivemobiletesttask.dto.product.ProductDtoRequest;
@@ -54,9 +55,9 @@ public class ProductService {
         isOrganizationActive(organizationFromDb);
 
         product.setOrganization(organizationFromDb);
-        Product savedProduct = productRepository.save(product);
+        productRepository.save(product);
 
-        ProductDtoResponse response = mapper.map(savedProduct, ProductDtoResponse.class);
+        ProductDtoResponse response = mapper.map(product, ProductDtoResponse.class);
         return ResponseEntity.ok(response);
     }
 
@@ -85,9 +86,9 @@ public class ProductService {
 
     }
 
-    public ResponseEntity<Set<ProductDtoResponse>> findAll() {
-        Set<Product> products = productRepository.findAllWhereOrganizationStatusIsActive()
-                .orElseThrow(()->new ResourceNotFoundException(PRODUCT,"organization status","ACTIVE"));
+    public ResponseEntity<Set<ProductDtoResponse>> findAll(PageRequest pageRequest) {
+        Set<Product> products = productRepository.findAllWhereOrganizationStatusIsActive(pageRequest)
+                .orElseThrow(() -> new ResourceNotFoundException(PRODUCT, "organization status", "ACTIVE"));
         Set<ProductDtoResponse> response = products
                 .stream().map(p -> mapper.map(p, ProductDtoResponse.class))
                 .collect(Collectors.toSet());

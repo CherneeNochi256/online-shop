@@ -13,6 +13,14 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
+//jar {
+//    manifest {
+//        attributes(
+//                'Main-Class': 'ru.maxim.effectivemobiletesttask.EffectiveMobileTestTaskApplication'
+//        )
+//    }
+//}
+
 
 repositories {
     mavenCentral()
@@ -50,8 +58,18 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
 
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.6")
+
+
+    implementation("com.github.javafaker:javafaker:1.0.2")
+    testImplementation("org.testcontainers:testcontainers:1.18.0")
+    testImplementation("org.testcontainers:postgresql:1.18.0")
+    testImplementation("org.testcontainers:junit-jupiter:1.18.0")
+
+    implementation("org.flywaydb:flyway-core:9.17.0")
 
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()

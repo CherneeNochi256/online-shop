@@ -7,14 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.maxim.effectivemobiletesttask.dto.ApiResponse;
 import ru.maxim.effectivemobiletesttask.dto.organization.OrganizationDtoRequest;
+import ru.maxim.effectivemobiletesttask.dto.organization.OrganizationDtoResponse;
 import ru.maxim.effectivemobiletesttask.entity.Organization;
 import ru.maxim.effectivemobiletesttask.entity.Role;
 import ru.maxim.effectivemobiletesttask.entity.User;
+import ru.maxim.effectivemobiletesttask.entity.ValidationForm;
 import ru.maxim.effectivemobiletesttask.exception.ResourceNotFoundException;
 import ru.maxim.effectivemobiletesttask.repository.OrganizationsRepository;
 import ru.maxim.effectivemobiletesttask.repository.UserRepository;
+import ru.maxim.effectivemobiletesttask.repository.ValidationFormRepository;
 
-import static ru.maxim.effectivemobiletesttask.utils.AppConstants.*;
+import static ru.maxim.effectivemobiletesttask.utils.AppConstants.ID;
+import static ru.maxim.effectivemobiletesttask.utils.AppConstants.ORGANIZATION;
 
 @Service
 @RequiredArgsConstructor
@@ -22,38 +26,45 @@ public class OrganizationService {
     private final OrganizationsRepository organizationsRepository;
     private final UserRepository userRepository;
     private final ModelMapper mapper;
+    private final ValidationFormRepository validationFormRepository;
 
 
-    public Organization organizationById(Long id){
-        return organizationsRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException(ORGANIZATION,ID,id));
+    public ResponseEntity<OrganizationDtoResponse> organizationById(Long id) {
+        Organization organization = organizationsRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ORGANIZATION, ID, id));
+        OrganizationDtoResponse response = mapper.map(organization, OrganizationDtoResponse.class);
+        return ResponseEntity.ok(response);
     }
-    public Organization organizationByName(String name){
-        return organizationsRepository.findByName(name)
-                .orElseThrow(()->new ResourceNotFoundException(ORGANIZATION,NAME,name));
-    }
-    public ResponseEntity<Organization> createOrganizationByUser(User user, OrganizationDtoRequest organizationDto) {
 
-        Organization organization = mapper.map(organizationDto,Organization.class);
+    public ResponseEntity<OrganizationDtoResponse> createOrganizationByUser(User user, OrganizationDtoRequest organizationDto) {
+
+        Organization organization = mapper.map(organizationDto, Organization.class);
 
         user.getRoles().add(Role.ORG_OWNER);
         organization.setUser(user);
-        organization.setStatus("ACTIVE");
+        organization.setStatus("UNCHECKED");
+
+        ValidationForm form = ValidationForm.builder()
+                .organization(organization)
+                .build();
 
         userRepository.save(user);
-        Organization savedOrganization = organizationsRepository.save(organization);
+        organizationsRepository.save(organization);
+        validationFormRepository.save(form);
 
-        return new ResponseEntity<>(savedOrganization, HttpStatus.CREATED);
+        OrganizationDtoResponse response = mapper.map(organization, OrganizationDtoResponse.class);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 
-    public ResponseEntity<ApiResponse> freezeOrganization(Long organizationId){
+    public ResponseEntity<ApiResponse> freezeOrganization(Long organizationId) {
         Organization organization = organizationsRepository.findById(organizationId)
                 .orElseThrow(() -> new ResourceNotFoundException(ORGANIZATION, ID, organizationId));
 
         organization.setStatus("FROZEN");
 
-        Organization savedOrganization = organizationsRepository.save(organization);
+        organizationsRepository.save(organization);
 
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "You have successfully frozen the organization with id: " + organizationId));
     }

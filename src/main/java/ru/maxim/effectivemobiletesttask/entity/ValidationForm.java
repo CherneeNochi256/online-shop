@@ -4,28 +4,22 @@ import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-
 @Entity
-@Table(name = "purchase_history")
+@Table(name = "validation_form")
 @Getter
-@Builder
 @Setter
+@ToString
+@EqualsAndHashCode
+@Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class PurchaseHistory {
+public class ValidationForm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, updatable = false)
-    private User user;
-
-
-    @OneToOne
-    @JoinColumn(name = "product_id", nullable = false, updatable = false)
-    private Product product;
-
-    private Date date;
+    private Organization organization;
+    private Boolean approved;
+    private String message;
 }

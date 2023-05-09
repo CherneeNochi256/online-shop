@@ -1,10 +1,8 @@
 package ru.maxim.effectivemobiletesttask.entity;
 
-import jakarta.persistence.*;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
-
-
 
 
 @Entity
