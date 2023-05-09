@@ -1,26 +1,37 @@
 package ru.maxim.effectivemobiletesttask.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
+import ru.maxim.effectivemobiletesttask.dto.discount.DiscountDtoRequest;
+import ru.maxim.effectivemobiletesttask.dto.discount.DiscountDtoResponse;
 import ru.maxim.effectivemobiletesttask.entity.Discount;
 import ru.maxim.effectivemobiletesttask.entity.Product;
+import ru.maxim.effectivemobiletesttask.entity.Tag;
 import ru.maxim.effectivemobiletesttask.exception.ResourceNotFoundException;
 import ru.maxim.effectivemobiletesttask.repository.DiscountRepository;
 import ru.maxim.effectivemobiletesttask.repository.ProductRepository;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static ru.maxim.effectivemobiletesttask.utils.AppConstants.*;
 
 @ExtendWith(MockitoExtension.class)
 class DiscountServiceTest {
+
+    @InjectMocks
     private DiscountService underTest;
 
     @Mock
@@ -28,128 +39,219 @@ class DiscountServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+    @Mock
+    private ModelMapper mapper;
+
+
+    private Discount discount;
+    private Long discountId;
+    private Long productId;
+    private DiscountDtoRequest discountDto;
+    private DiscountDtoRequest discountDtoUpdate;
+    private Product product;
+    private Product product2;
+    private Product product3;
+    private String requestTag;
+    private Set<Product> products;
+    private HashSet<Tag> tags;
+    private Tag tag;
 
     @BeforeEach
-    void setUp(){
-        underTest = new DiscountService(discountRepository,productRepository);
+    void setUp() {
+
+        discountId = 1L;
+
+        discount = Discount.builder()
+                .id(discountId)
+                .discount(0.12)
+                .interval(100060L)
+                .build();
+
+        discountDto = new DiscountDtoRequest(0.12, 100060L);
+        discountDtoUpdate = new DiscountDtoRequest(0.15, 8000L);
+
+        productId = 1L;
+        requestTag = "tag";
+
+        tag = Tag.builder()
+                .tag(requestTag)
+                .build();
+
+        tags = new HashSet<>();
+        tags.add(tag);
+
+        product = Product.builder()
+                .tags(tags)
+                .build();
+
+        product2 = Product.builder()
+                .tags(tags)
+                .build();
+
+        product3 = Product.builder()
+                .tags(tags)
+                .discount(discount)
+                .build();
+
+
+        products = new HashSet<>();
+
+        products.add(product);
+        products.add(product2);
+
     }
 
     @Test
     void getDiscountById() {
-        //given
-        Long id = 1L;
+        given(discountRepository.findById(discountId))
+                .willReturn(Optional.of(discount));
+
+        DiscountDtoResponse expectedResponse = mapper.map(discount, DiscountDtoResponse.class);
         //when
-        underTest.getDiscountById(id);
+        ResponseEntity<DiscountDtoResponse> response = underTest.getDiscountById(discountId);
 
         //then
-        verify(discountRepository).findById(id);
+        verify(discountRepository).findById(discountId);
+        assertEquals(expectedResponse, response.getBody());
+    }
 
+    @Test
+    void WhenGetCommentById_ThrowsResourceNotFoundException() {
+
+        given(discountRepository.findById(discountId))
+                .willThrow(new ResourceNotFoundException(DISCOUNT, ID, discountId));
+
+        //when
+        assertThrows(ResourceNotFoundException.class, () -> underTest.getDiscountById(discountId));
     }
 
     @Test
     void createDiscountForProduct() {
         //given
-        Discount discount =new Discount();
-        Product product = new Product();
+        given(mapper.map(discountDto, Discount.class)).
+                willReturn(discount);
+
+        DiscountDtoResponse expectedResponse = mapper.map(discountDto, DiscountDtoResponse.class);
+
+        given(productRepository.findById(productId))
+                .willReturn(Optional.of(product));
         //when
-        underTest.createDiscountForProduct(product,discount);
+        ResponseEntity<DiscountDtoResponse> response = underTest.createDiscountForProduct(discountDto, productId);
         //then
         assertEquals(product.getDiscount(), discount);
-
+        assertEquals(response.getBody(), expectedResponse);
         verify(discountRepository).save(discount);
+        verify(productRepository).save(product);
+    }
+
+    @Test
+    void NotCreateDiscountForProduct_WhenProductNotFound_ThenThrowsException() {
+        given(productRepository.findById(productId))
+                .willThrow(new ResourceNotFoundException(PRODUCT, ID, productId));
+        //when
+        assertThrows(ResourceNotFoundException.class, () -> underTest.createDiscountForProduct(discountDto, productId));
+        //then
+        verify(discountRepository, never()).save(discount);
+        verify(productRepository, never()).save(product);
     }
 
     @Test
     void createDiscountForGroup() {
         //given
-        String tag = "tag";
-        Discount discount = new Discount();
+
+        DiscountDtoResponse expectedResponse = mapper.map(discountDto, DiscountDtoResponse.class);
+
+        given(mapper.map(discountDto, Discount.class))
+                .willReturn(discount);
+
+        given(productRepository.findProductsByTag(requestTag))
+                .willReturn(Optional.of(products));
 
         //when
-        underTest.createDiscountForGroup(discount,tag);
+        ResponseEntity<DiscountDtoResponse> response = underTest.createDiscountForGroup(discountDto, requestTag);
         //then
-        verify(productRepository).findProductsByTag(tag);
+        products.forEach(p -> {
+            assertEquals(p.getDiscount(), discount);
+            verify(productRepository).save(p);
+        });
         verify(discountRepository).save(discount);
-
+        assertEquals(expectedResponse, response.getBody());
 
     }
+
+    @Test
+    void NotCreateDiscountForGroup_WhenProductNotFound_ThenThrowsException() {
+        given(productRepository.findProductsByTag(requestTag))
+                .willThrow(new ResourceNotFoundException(PRODUCT, ID, productId));
+        //when
+        assertThrows(ResourceNotFoundException.class, () -> underTest.createDiscountForGroup(discountDto, requestTag));
+        //then
+        verify(discountRepository, never()).save(discount);
+        verify(productRepository, never()).save(product);
+
+    }
+
 
     @Test
     void updateDiscount() {
-        //given
-        Long id = 1L;
-        Discount discount = new Discount();
+        given(discountRepository.findById(discountId))
+                .willReturn(Optional.of(discount));
 
-        given(discountRepository.findById(id))
-                .willReturn(Optional.of(new Discount()));
+        DiscountDtoResponse expectedResponse = mapper.map(discountDtoUpdate, DiscountDtoResponse.class);
+
+
         //when
-        underTest.updateDiscount(discount,id);
+        ResponseEntity<DiscountDtoResponse> response = underTest.updateDiscount(discountDtoUpdate, discountId);
         //then
-        verify(discountRepository).findById(id);
-        verify(discountRepository).save(any());
+        verify(discountRepository).save(discount);
+        assertEquals(discount.getDiscount(), discountDtoUpdate.getDiscount());
+        assertEquals(discount.getInterval(), discountDtoUpdate.getInterval());
+        assertEquals(expectedResponse, response.getBody());
     }
-    @Test
-    void throwResourceNotFoundOnMethod_updateDiscount() {
-        //given
-        Long id = 1L;
-        Discount discount = new Discount();
-        //when
-        ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            underTest.updateDiscount(discount,id);
-        });
-        //then
 
-        Assertions.assertEquals("Discount not found", exception.getMessage());
+    @Test
+    void NotUpdateDiscount_WhenDiscountIsNotFound() {
+        given(discountRepository.findById(discountId))
+                .willThrow(new ResourceNotFoundException(DISCOUNT, ID, discountId));
+
+        //when
+        assertThrows(ResourceNotFoundException.class, () -> underTest.updateDiscount(discountDtoUpdate, discountId));
+        //then
+        verify(discountRepository, never()).save(discount);
     }
 
     @Test
     void updateDiscountForGroup() {
-        //given
-        String tag = "tag";
+        given(productRepository.findProductByTag(requestTag))
+                .willReturn(Optional.of(product3));
 
-        Discount discount = new Discount();
-        discount.setId(1L);
+        given(discountRepository.findById(product3.getDiscount().getId()))
+                .willReturn(Optional.of(discount));
 
-        Discount discountFromDb = new Discount();
+        DiscountDtoResponse expectedResponse = mapper.map(discountDtoUpdate, DiscountDtoResponse.class);
 
-        Product product = new Product();
-        product.setDiscount(discount);
-
-        given(productRepository.findProductByTag(tag))
-                .willReturn(product);
-        given(discountRepository.findById(product.getDiscount().getId()))
-                .willReturn(Optional.of(discountFromDb));
         //when
-        underTest.updateDiscountForGroup(discount,tag);
+        ResponseEntity<DiscountDtoResponse> response = underTest.updateDiscountForGroup(discountDtoUpdate, requestTag);
+
         //then
-        verify(productRepository).findProductByTag(tag);
-        verify(discountRepository).findById(product.getDiscount().getId());
-        verify(discountRepository).save(any());
+
+        verify(discountRepository).save(discount);
+        assertEquals(discount.getDiscount(), discountDtoUpdate.getDiscount());
+        assertEquals(discount.getInterval(), discountDtoUpdate.getInterval());
+        assertEquals(expectedResponse, response.getBody());
     }
 
     @Test
-    void throwResourceNotFoundOnMethod_updateDiscountForGroup() {
-        //given
-        String tag = "tag";
+    void NotUpdateDiscountForGroup_WhenThereIsNoProductsByTheTag_ThenThrowsException() {
+        given(productRepository.findProductByTag(requestTag))
+                .willThrow(new ResourceNotFoundException(PRODUCT, TAG, requestTag));
 
-        Discount discount = new Discount();
-        discount.setId(1L);
-
-        Product product = new Product();
-        product.setDiscount(discount);
-
-        given(productRepository.findProductByTag(tag))
-                .willReturn(product);
-        given(discountRepository.findById(product.getDiscount().getId()))
-                .willReturn(Optional.empty());
         //when
+        assertThrows(ResourceNotFoundException.class, () -> underTest.updateDiscountForGroup(discountDtoUpdate, requestTag));
 
-        ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            underTest.updateDiscountForGroup(discount,tag);
-        });
         //then
 
-        Assertions.assertEquals("Discount not found", exception.getMessage());
+        verify(discountRepository, never()).save(discount);
     }
 
 }
