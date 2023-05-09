@@ -3,21 +3,18 @@ package ru.maxim.effectivemobiletesttask.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import ru.maxim.effectivemobiletesttask.AbstractTestcontainers;
 import ru.maxim.effectivemobiletesttask.entity.Organization;
 import ru.maxim.effectivemobiletesttask.entity.Product;
 import ru.maxim.effectivemobiletesttask.entity.Tag;
-import ru.maxim.effectivemobiletesttask.entity.User;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 
 @DataJpaTest
-class ProductRepositoryTest {
+class ProductRepositoryTest extends AbstractTestcontainers {
     @Autowired
     private ProductRepository underTest;
 
@@ -40,10 +37,10 @@ class ProductRepositoryTest {
         underTest.save(product);
         //when
 
-        Product productFromDb = underTest.findById(product.getId()).get();
+        Product productFromDb = underTest.findById(product.getId()).orElse(null);
 
         //then
-        assertEquals(product,productFromDb);
+        assertEquals(product, productFromDb);
     }
 
     @Test
@@ -78,7 +75,6 @@ class ProductRepositoryTest {
         tagRepository.save(tag2);
 
 
-
         HashSet<Product> productSet = new HashSet<>();
         productSet.add(product);
         productSet.add(product2);
@@ -86,7 +82,7 @@ class ProductRepositoryTest {
 
         //when
 
-        Set<Product> productsByTag = underTest.findProductsByTag("tag");
+        Set<Product> productsByTag = underTest.findProductsByTag("tag").orElse(null);
 
         //then
         assertEquals(productSet,productsByTag);
@@ -109,7 +105,7 @@ class ProductRepositoryTest {
 
         //when
 
-        Product productByTag = underTest.findProductByTag("tag");
+        Product productByTag = underTest.findProductByTag("tag").orElse(null);
 
         //then
         assertEquals(product,productByTag);
@@ -128,17 +124,17 @@ class ProductRepositoryTest {
         organizationsRepository.save(organization2);
 
 
-        List<Product> products= new ArrayList<>();
+        Set<Product> products = new HashSet<>();
 
-        for (int i = 0; i< 10;i++){
+        for (int i = 0; i < 10; i++) {
             Product product = new Product();
             product.setPrice((double) i);
             product.setQuantity(Long.parseLong(String.valueOf(i)));
 
-            if ( i % 2 == 0){
+            if (i % 2 == 0) {
                 product.setOrganization(organization);
                 products.add(product);
-            }else {
+            } else {
                 product.setOrganization(organization2);
             }
 
@@ -146,12 +142,13 @@ class ProductRepositoryTest {
         }
 
         //when
-        List<Product> productList = underTest.findAll();
+        Set<Product> productList = underTest.findAllWhereOrganizationStatusIsActive(PageRequest.of(0,10))
+                .orElse(null);
 
         //then
 
-        assertEquals(products,productList);
-
+        assertEquals(5,productList.size());
+        assertTrue(productList.containsAll(products));
 
     }
 }
