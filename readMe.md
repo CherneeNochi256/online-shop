@@ -238,8 +238,8 @@ Test them using postman or any other rest client.
     productId = 123
 ```
 
-##### <a id="create-product-by-admin"> Create product by admin -> api/v1/admin/products </a>
-##### <a id="create-product"> Create product -> api/v1/products </a>
+##### <a id="create-product-by-admin"> Create product by admin -> api/v1/admin/products </a>,
+##### <a id="create-product"> Create product -> api/v1/products </a>,
 ##### <a id="update-product"> Create product -> api/v1/products/{id} </a>
 
 ```json
@@ -251,7 +251,7 @@ Test them using postman or any other rest client.
 }
 ```
 
-##### <a id="buy-product"> Buy the product -> api/v1/purchases </a>
+##### <a id="buy-product"> Buy the product -> api/v1/purchases </a>,
 ##### <a id="refund-product"> Refund the product -> api/v1/purchases </a>
 
 ```param
