@@ -13,13 +13,6 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
-//jar {
-//    manifest {
-//        attributes(
-//                'Main-Class': 'ru.maxim.effectivemobiletesttask.EffectiveMobileTestTaskApplication'
-//        )
-//    }
-//}
 
 
 repositories {
@@ -30,8 +23,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    //  Temporary explicit version to fix Thymeleaf bug
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
     implementation 'org.springframework.security:spring-security-test'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

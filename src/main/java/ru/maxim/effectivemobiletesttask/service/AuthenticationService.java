@@ -130,7 +130,6 @@ public class AuthenticationService {
                         .refreshToken(refreshToken)
                         .build();
 
-//                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);  //it produced refreshToken test to fall due to it produced response type to be Content type 'application/octet-stream'
                 return authResponse;
             }
         }

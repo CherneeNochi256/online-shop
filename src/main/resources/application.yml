@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/online_shop
-    username: postgres
-    password: postgres
+    url: postgres://effectivemobiledb_user:4d6gGVnxPDSmSUgIBk3ErVAvXsqlO2MD@dpg-cics1u2ip7vnjjmfnofg-a/effectivemobiledb
+    username: effectivemobiledb_user
+    password: 4d6gGVnxPDSmSUgIBk3ErVAvXsqlO2MD
 
   jpa:
     generate-ddl: false
