@@ -1,6 +1,12 @@
 # Spring Boot, PostgreSQL, Spring Security, JWT, JPA, Rest API
 
-Build Restful CRUD API for a online shop using Spring Boot, PostgreSQL, JPA and Hibernate.
+## Try it yourself 
+
+**1. Go to Postman and make a request to**
+
+```text
+https://online-shop-rest-api.up.railway.app/${any crud path described below}
+```
 
 ## Steps to Setup
 
