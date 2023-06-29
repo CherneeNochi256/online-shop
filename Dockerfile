@@ -10,7 +10,7 @@ RUN ./gradlew bootJar --no-daemon
 
 FROM openjdk:17-jdk-slim
 
-EXPOSE 8080
+EXPOSE ${PORT}
 
 COPY --from=build /build/libs/EffectiveMobileTestTask-0.0.1-SNAPSHOT.jar app.jar
 
