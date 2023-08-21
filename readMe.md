@@ -5,7 +5,7 @@
 **1. Go to Postman and make a request to**
 
 ```text
-https://online-shop-rest-api.up.railway.app/${any crud path described below}
+https://online-shop-a5hd.onrender.com/${any crud path described below}
 ```
 
 ## Steps to Setup
