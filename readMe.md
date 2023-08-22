@@ -1,6 +1,6 @@
 # Spring Boot, PostgreSQL, Spring Security, JWT, JPA, Rest API
 
-## Try it yourself 
+## Try it yourself (Currently not deployed)
 
 **1. Go to Postman and make a request to**
 
